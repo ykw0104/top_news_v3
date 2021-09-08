@@ -2,4 +2,8 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 
-createApp(App).use(router).mount('#app')
+import '@/styles/index.scss' // 加载全局样式
+
+const app = createApp(App)
+app.use(router)
+app.mount('#app')

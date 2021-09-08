@@ -27,3 +27,6 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 ```
 https://www.yuque.com/lipengzhou/toutiao-publish-vue
 ```
+
+API: http://api-toutiao-web.itheima.net'
+账号: 13911111111 / 246810

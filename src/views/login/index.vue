@@ -15,7 +15,7 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button class="login-btn" type="primary" @click="onSubmit">
+        <el-button class="login-btn" type="primary" @click="onLogin">
           登录
         </el-button>
       </el-form-item>
@@ -26,27 +26,45 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
 
+import request from "../../utils/request";
+
 export default defineComponent({
   name: "LoginIndex",
 
   setup() {
     // 用户手机号和验证码
     const user = reactive({
-      mobile: "", // 13911111111
-      code: "", // 246810
+      mobile: "13911111111", // 13911111111
+      code: "246810", // 246810
     });
     // 同意协议
     const checked = ref(false);
 
-    const onSubmit = () => {
-      console.log(1111);
+    // 登录操作
+    const onLogin = () => {
+      // 获取表单验证
+
+      // 验证通过, 提交登录
+      request({
+        method: "POST",
+        url: "/mp/v1_0/authorizations",
+        data: user,
+      })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log("登录失败", err);
+        });
+
+      // 处理后端响应结果
     };
 
     return {
       user,
       checked,
 
-      onSubmit,
+      onLogin,
     };
   },
 });

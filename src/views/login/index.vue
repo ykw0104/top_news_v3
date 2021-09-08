@@ -25,6 +25,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
+import { ElMessage } from "element-plus";
 
 import request from "../../utils/request";
 
@@ -42,9 +43,9 @@ export default defineComponent({
 
     // 登录操作
     const onLogin = () => {
-      // 获取表单验证
+      // 1. 获取表单验证
 
-      // 验证通过, 提交登录
+      // 2. 验证通过, 提交登录
       request({
         method: "POST",
         url: "/mp/v1_0/authorizations",
@@ -52,9 +53,25 @@ export default defineComponent({
       })
         .then((res) => {
           console.log(res);
+
+          // 成功提示消息
+          ElMessage({
+            message: "登录成功",
+            type: "success",
+            center: true,
+            duration: 2000,
+          });
         })
         .catch((err) => {
           console.log("登录失败", err);
+
+          // 失败提示消息
+          ElMessage({
+            message: "登录失败, 手机号或验证码错误1",
+            type: "error",
+            center: true,
+            duration: 2000,
+          });
         });
 
       // 处理后端响应结果

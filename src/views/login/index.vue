@@ -13,9 +13,9 @@
       <el-form-item prop="code">
         <el-input v-model="user.code" placeholder="请输入验证码"></el-input>
       </el-form-item>
-      <el-form-item>
+      <el-form-item prop="agree">
         <el-checkbox
-          v-model="checked"
+          v-model="user.agree"
           label="我已阅读并同意用户协议和隐私条款"
         />
       </el-form-item>
@@ -46,9 +46,8 @@ export default defineComponent({
     const user = reactive({
       mobile: "13911111111", // 手机号码 13911111111
       code: "246810", // 验证码 246810
+      agree: false, // 是否同意协议
     });
-
-    const checked = ref(false); // 同意协议
 
     const loginLoading = ref(false); //登录按钮是否显示加载
 
@@ -70,6 +69,19 @@ export default defineComponent({
         {
           pattern: /^\d{6}$/,
           message: "验证码格式不正确",
+          trigger: "change",
+        },
+      ],
+      agree: [
+        {
+          // 自定义校验规则
+          validator: (rule, value, callback) => {
+            if (value) {
+              callback();
+            } else {
+              callback(new Error("勾选同意协议后才能登录"));
+            }
+          },
           trigger: "change",
         },
       ],
@@ -128,7 +140,6 @@ export default defineComponent({
 
     return {
       user,
-      checked,
       loginLoading,
       formRules,
       loginForm,

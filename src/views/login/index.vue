@@ -1,11 +1,11 @@
 <template>
   <div class="login-container">
     <!-- 登录表单 -->
-    <el-form class="login-form" :model="user">
-      <el-form-item>
+    <el-form class="login-form" :model="user" :rules="formRules">
+      <el-form-item prop="mobile">
         <el-input v-model="user.mobile" placeholder="请输入手机号"></el-input>
       </el-form-item>
-      <el-form-item>
+      <el-form-item prop="code">
         <el-input v-model="user.code" placeholder="请输入验证码"></el-input>
       </el-form-item>
       <el-form-item>
@@ -39,13 +39,32 @@ export default defineComponent({
 
   setup() {
     const user = reactive({
-      mobile: "13911111111", // 手机号码 13911111111
-      code: "246810", // 验证码 246810
+      mobile: "", // 手机号码 13911111111
+      code: "", // 验证码 246810
     });
     const checked = ref(false); // 同意协议
     const loginLoading = ref(false); //登录按钮是否显示加载
+    const formRules = reactive({
+      // 表单验证
+      mobile: [
+        { required: true, message: "手机号不能为空", trigger: "change" },
+        {
+          pattern: /^(0|86|17951)?(13[0-9]|15[012356789]|166|17[3678]|18[0-9]|14[57])[0-9]{8}$/,
+          message: "手机号格式不正确",
+          trigger: "change",
+        },
+      ],
+      code: [
+        { required: true, message: "验证码不能为空", trigger: "change" },
+        {
+          pattern: /^\d{6}$/,
+          message: "验证码格式不正确",
+          trigger: "change",
+        },
+      ],
+    });
 
-    // 登录操作
+    /* 登录操作 */
     const onLogin = () => {
       // 1. 获取表单验证
 
@@ -90,6 +109,7 @@ export default defineComponent({
       user,
       checked,
       loginLoading,
+      formRules,
 
       onLogin,
     };

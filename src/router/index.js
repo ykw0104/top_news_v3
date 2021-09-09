@@ -8,8 +8,14 @@ const routes = [
   },
   {
     path: "/",
-    name: "home",
-    component: () => import("@/views/home"),
+    component: () => import("@/views/layout"),
+    children: [
+      {
+        path: "",
+        name: "home",
+        component: () => import("@/views/home"),
+      },
+    ],
   },
 ];
 

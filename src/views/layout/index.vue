@@ -1,9 +1,17 @@
 <template>
-  <div class="layout-container">
-    <div>顶部</div>
-    <router-view />
-    <div>ceb</div>
-  </div>
+  <el-container class="layout-container">
+    <!-- 1. 侧边栏 -->
+    <el-aside class="aside" width="200px">Aside</el-aside>
+
+    <el-container>
+      <!-- 2. 顶部 -->
+      <el-header class="header">Header</el-header>
+      <!-- 3. 主要显示区 -->
+      <el-main class="main">
+        <router-view />
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
 
 <script lang="ts">
@@ -17,4 +25,24 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.layout-container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  .aside {
+    background-color: #d3dce6;
+  }
+
+  .header {
+    background-color: #b3c0d1;
+  }
+
+  .main {
+    background-color: #e9eef3;
+  }
+}
+</style>

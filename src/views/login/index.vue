@@ -15,7 +15,12 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button class="login-btn" type="primary" @click="onLogin">
+        <el-button
+          class="login-btn"
+          type="primary"
+          :loading="loginLoading"
+          @click="onLogin"
+        >
           登录
         </el-button>
       </el-form-item>
@@ -33,19 +38,19 @@ export default defineComponent({
   name: "LoginIndex",
 
   setup() {
-    // 用户手机号和验证码
     const user = reactive({
-      mobile: "13911111111", // 13911111111
-      code: "246810", // 246810
+      mobile: "13911111111", // 手机号码 13911111111
+      code: "246810", // 验证码 246810
     });
-    // 同意协议
-    const checked = ref(false);
+    const checked = ref(false); // 同意协议
+    const loginLoading = ref(false); //登录按钮是否显示加载
 
     // 登录操作
     const onLogin = () => {
       // 1. 获取表单验证
 
       // 2. 验证通过, 提交登录
+      loginLoading.value = true; // 开启登录按钮加载显示
       request({
         method: "POST",
         url: "/mp/v1_0/authorizations",
@@ -61,6 +66,8 @@ export default defineComponent({
             center: true,
             duration: 2000,
           });
+
+          loginLoading.value = false; // 关闭登录按钮加载显示
         })
         .catch((err) => {
           console.log("登录失败", err);
@@ -72,6 +79,8 @@ export default defineComponent({
             center: true,
             duration: 2000,
           });
+
+          loginLoading.value = false; // 关闭登录按钮加载显示
         });
 
       // 处理后端响应结果
@@ -80,6 +89,7 @@ export default defineComponent({
     return {
       user,
       checked,
+      loginLoading,
 
       onLogin,
     };

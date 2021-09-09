@@ -37,7 +37,7 @@
 import { defineComponent, reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 
-import request from "../../utils/request";
+import { login } from "../../api/user.js";
 
 export default defineComponent({
   name: "LoginIndex",
@@ -96,20 +96,17 @@ export default defineComponent({
         }
 
         // 2. 表单验证通过, 提交登录
-        login();
+        loginFn();
       });
 
       // 处理后端响应结果
     };
 
-    // 处理请求登录的方法
-    const login = () => {
+    /* 处理请求登录的方法 */
+    const loginFn = () => {
       loginLoading.value = true; // 开启登录按钮加载显示
-      request({
-        method: "POST",
-        url: "/mp/v1_0/authorizations",
-        data: user,
-      })
+      // 调用login请求方法
+      login(user)
         .then((res) => {
           console.log(res);
 
@@ -128,7 +125,7 @@ export default defineComponent({
 
           // 失败提示消息
           ElMessage({
-            message: "登录失败, 手机号或验证码错误1",
+            message: "登录失败, 手机号或验证码错误",
             type: "error",
             center: true,
             duration: 2000,

@@ -1,7 +1,9 @@
 <template>
   <el-container class="layout-container">
     <!-- 1. 侧边栏 -->
-    <el-aside class="aside" width="200px">Aside</el-aside>
+    <el-aside class="aside" width="200px">
+      <app-aside />
+    </el-aside>
 
     <el-container>
       <!-- 2. 顶部 -->
@@ -16,9 +18,13 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import AppAside from "./components/aside.vue";
 
 export default defineComponent({
   name: "LayoutIndex",
+  components: {
+    AppAside,
+  },
   setup() {
     return {};
   },

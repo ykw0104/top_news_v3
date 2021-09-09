@@ -35,6 +35,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 
 import { login } from "../../api/user.js";
@@ -87,6 +88,8 @@ export default defineComponent({
       ],
     });
 
+    const router = useRouter();
+
     /* 登录操作 */
     const onLogin = () => {
       // 1. 表单验证
@@ -108,8 +111,6 @@ export default defineComponent({
       // 调用login请求方法
       login(user)
         .then((res) => {
-          console.log(res);
-
           // 成功提示消息
           ElMessage({
             message: "登录成功",
@@ -119,6 +120,11 @@ export default defineComponent({
           });
 
           loginLoading.value = false; // 关闭登录按钮加载显示
+
+          /* 登录成功,跳转首页 */
+          router.push({
+            name: "home",
+          });
         })
         .catch((err) => {
           console.log("登录失败", err);

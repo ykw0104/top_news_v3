@@ -1,7 +1,12 @@
 <template>
   <div class="login-container">
     <!-- 登录表单 -->
-    <el-form class="login-form" :model="user" :rules="formRules">
+    <el-form
+      ref="loginForm"
+      class="login-form"
+      :model="user"
+      :rules="formRules"
+    >
       <el-form-item prop="mobile">
         <el-input v-model="user.mobile" placeholder="请输入手机号"></el-input>
       </el-form-item>
@@ -39,11 +44,17 @@ export default defineComponent({
 
   setup() {
     const user = reactive({
-      mobile: "", // 手机号码 13911111111
-      code: "", // 验证码 246810
+      mobile: "13911111111", // 手机号码 13911111111
+      code: "246810", // 验证码 246810
     });
+
     const checked = ref(false); // 同意协议
+
     const loginLoading = ref(false); //登录按钮是否显示加载
+
+    const loginForm = ref(null); // 表单form对象
+
+    // 自定义表单验证规则
     const formRules = reactive({
       // 表单验证
       mobile: [
@@ -66,9 +77,21 @@ export default defineComponent({
 
     /* 登录操作 */
     const onLogin = () => {
-      // 1. 获取表单验证
+      // 1. 表单验证
+      loginForm.value.validate((valid) => {
+        if (!valid) {
+          return false; // 停止请求提交
+        }
 
-      // 2. 验证通过, 提交登录
+        // 2. 表单验证通过, 提交登录
+        login();
+      });
+
+      // 处理后端响应结果
+    };
+
+    // 处理请求登录的方法
+    const login = () => {
       loginLoading.value = true; // 开启登录按钮加载显示
       request({
         method: "POST",
@@ -101,8 +124,6 @@ export default defineComponent({
 
           loginLoading.value = false; // 关闭登录按钮加载显示
         });
-
-      // 处理后端响应结果
     };
 
     return {
@@ -110,6 +131,7 @@ export default defineComponent({
       checked,
       loginLoading,
       formRules,
+      loginForm,
 
       onLogin,
     };

@@ -3,7 +3,6 @@
     <!-- 1. 侧边栏 -->
     <el-aside class="aside" width="200px">
       <app-aside class="aside-menu" />
-      {{ user }}
     </el-aside>
 
     <el-container>
@@ -18,7 +17,7 @@
         <el-dropdown class="header-right">
           <div class="avatar-wrap">
             <img class="avatar" src="./login-avatar.jpeg" alt="" />
-            <span>用户昵称</span>
+            <span>{{ layoutState.user.name }}</span>
             <i class="el-icon-arrow-down el-icon--right"></i>
           </div>
           <template #dropdown>
@@ -31,7 +30,6 @@
       </el-header>
       <!-- 3. 主要显示区 -->
       <el-main class="main">
-        {{ user }}
         <router-view />
       </el-main>
     </el-container>
@@ -50,21 +48,16 @@ export default defineComponent({
     AppAside,
   },
   setup() {
-    const user = reactive({
-      id: 0,
-      photo: "",
-      name: "",
+    const layoutState = reactive({
+      user: {}, // 用户信息
     });
 
     getUserProfile().then((res) => {
-      const { id, name, photo } = res.data.data;
-      user.id = id;
-      user.photo = photo;
-      user.name = name;
+      layoutState.user = res.data.data;
     });
 
     return {
-      user,
+      layoutState,
     };
   },
 });

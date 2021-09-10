@@ -2,7 +2,7 @@
   <el-container class="layout-container">
     <!-- 1. 侧边栏 -->
     <el-aside class="aside" width="200px">
-      <app-aside />
+      <app-aside class="aside-menu" />
     </el-aside>
 
     <el-container>
@@ -41,6 +41,10 @@ export default defineComponent({
 
   .aside {
     background-color: #d3dce6;
+
+    .aside-menu {
+      height: 100%;
+    }
   }
 
   .header {

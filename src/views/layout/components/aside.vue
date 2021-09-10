@@ -1,7 +1,6 @@
 <template>
   <el-menu
-    :uniqueOpened="true"
-    default-active="2"
+    default-active="1"
     class="el-menu-vertical-demo"
     @open="handleOpen"
     @close="handleClose"
@@ -9,50 +8,34 @@
     text-color="#fff"
     active-text-color="#ffd04b"
   >
-    <el-sub-menu index="1">
-      <template #title>
-        <i class="el-icon-location"></i>
-        <span>导航一</span>
-      </template>
-      <el-menu-item-group>
-        <template #title>分组一</template>
-        <el-menu-item index="1-1">选项1</el-menu-item>
-        <el-menu-item index="1-2">选项2</el-menu-item>
-      </el-menu-item-group>
-      <el-menu-item-group title="分组2">
-        <el-menu-item index="1-3">选项3</el-menu-item>
-      </el-menu-item-group>
-      <el-sub-menu index="1-4">
-        <template #title>选项4</template>
-        <el-menu-item index="1-4-1">选项1</el-menu-item>
-      </el-sub-menu>
-    </el-sub-menu>
-    <el-menu-item index="2">
-      <i class="el-icon-menu"></i>
-      <template #title>导航二</template>
+    <el-menu-item index="1">
+      <i class="el-icon-s-home"></i>
+      <template #title>首页</template>
     </el-menu-item>
-    <el-menu-item index="3" disabled>
-      <i class="el-icon-document"></i>
-      <template #title>导航三</template>
+    <el-menu-item index="2">
+      <i class="el-icon-files"></i>
+      <template #title>内容管理</template>
+    </el-menu-item>
+    <el-menu-item index="3">
+      <i class="el-icon-picture"></i>
+      <template #title>素材管理</template>
     </el-menu-item>
     <el-menu-item index="4">
-      <i class="el-icon-setting"></i>
-      <template #title>导航四</template>
+      <i class="el-icon-s-promotion"></i>
+      <template #title>发布文章</template>
     </el-menu-item>
-    <el-sub-menu index="5">
-      <template #title>
-        <i class="el-icon-location"></i>
-        <span>导航一</span>
-      </template>
-      <el-menu-item-group>
-        <template #title>分组一</template>
-        <el-menu-item index="5-1">选项1</el-menu-item>
-        <el-menu-item index="5-2">选项2</el-menu-item>
-      </el-menu-item-group>
-      <el-menu-item-group title="分组2">
-        <el-menu-item index="5-3">选项3</el-menu-item>
-      </el-menu-item-group>
-    </el-sub-menu>
+    <el-menu-item index="5">
+      <i class="el-icon-s-comment"></i>
+      <template #title>评论管理</template>
+    </el-menu-item>
+    <el-menu-item index="6">
+      <i class="el-icon-ice-cream"></i>
+      <template #title>粉丝管理</template>
+    </el-menu-item>
+    <el-menu-item index="7">
+      <i class="el-icon-setting"></i>
+      <template #title>个人设置</template>
+    </el-menu-item>
   </el-menu>
 </template>
 

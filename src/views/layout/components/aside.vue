@@ -4,7 +4,7 @@
     background-color="#002033"
     text-color="#fff"
     active-text-color="#ffd04b"
-    router="true"
+    :router="true"
   >
     <el-menu-item index="/">
       <i class="el-icon-s-home"></i>

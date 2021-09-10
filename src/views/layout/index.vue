@@ -7,7 +7,31 @@
 
     <el-container>
       <!-- 2. 顶部 -->
-      <el-header class="header">Header</el-header>
+      <el-header class="header">
+        <!-- 2.1 顶部左侧 -->
+        <div class="header-left">
+          <i class="header-left-icon el-icon-s-fold"></i>
+          <span class="header-desc">欲寄彩笺兼尺素,山长水阔知何处</span>
+        </div>
+        <!-- 2.2 顶部右侧 -->
+        <el-dropdown class="header-right">
+          <div class="avatar-wrap">
+            <img
+              class="avatar"
+              src="https://img2.baidu.com/it/u=3422481151,3897337691&fm=26&fmt=auto"
+              alt=""
+            />
+            <span>用户昵称</span>
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </div>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item>设置</el-dropdown-item>
+              <el-dropdown-item>退出</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </el-header>
       <!-- 3. 主要显示区 -->
       <el-main class="main">
         <router-view />
@@ -48,7 +72,36 @@ export default defineComponent({
   }
 
   .header {
-    background-color: #b3c0d1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+
+    .header-left {
+      .header-left-icon {
+        color: #606266;
+        font-size: 22px;
+      }
+
+      .header-desc {
+        font-family: "hangkai";
+        font-size: 22px;
+      }
+    }
+
+    .header-right {
+      .avatar-wrap {
+        display: flex;
+        align-items: center;
+
+        .avatar {
+          width: 40px;
+          height: 40px;
+          margin-right: 10px;
+          border-radius: 50%;
+        }
+      }
+    }
   }
 
   .main {

@@ -3,6 +3,7 @@
     <!-- 1. 侧边栏 -->
     <el-aside class="aside" width="200px">
       <app-aside class="aside-menu" />
+      {{ user }}
     </el-aside>
 
     <el-container>
@@ -16,11 +17,7 @@
         <!-- 2.2 顶部右侧 -->
         <el-dropdown class="header-right">
           <div class="avatar-wrap">
-            <img
-              class="avatar"
-              src="https://img2.baidu.com/it/u=3422481151,3897337691&fm=26&fmt=auto"
-              alt=""
-            />
+            <img class="avatar" src="./login-avatar.jpeg" alt="" />
             <span>用户昵称</span>
             <i class="el-icon-arrow-down el-icon--right"></i>
           </div>
@@ -34,6 +31,7 @@
       </el-header>
       <!-- 3. 主要显示区 -->
       <el-main class="main">
+        {{ user }}
         <router-view />
       </el-main>
     </el-container>
@@ -41,8 +39,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, reactive, ref } from "vue";
+
 import AppAside from "./components/aside.vue";
+import { getUserProfile } from "../../api/user.js";
 
 export default defineComponent({
   name: "LayoutIndex",
@@ -50,7 +50,22 @@ export default defineComponent({
     AppAside,
   },
   setup() {
-    return {};
+    const user = reactive({
+      id: 0,
+      photo: "",
+      name: "",
+    });
+
+    getUserProfile().then((res) => {
+      const { id, name, photo } = res.data.data;
+      user.id = id;
+      user.photo = photo;
+      user.name = name;
+    });
+
+    return {
+      user,
+    };
   },
 });
 </script>

@@ -121,6 +121,9 @@ export default defineComponent({
 
           loginLoading.value = false; // 关闭登录按钮加载显示
 
+          /* 请求的用户数据存放到本地 */
+          window.localStorage.setItem("user", JSON.stringify(res.data.data));
+
           /* 登录成功,跳转首页 */
           router.push({
             name: "home",

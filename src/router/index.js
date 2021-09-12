@@ -24,4 +24,15 @@ const router = createRouter({
   routes,
 });
 
+router.beforeEach((to, from) => {
+  const user = JSON.parse(window.localStorage.getItem("user"));
+  // 访问页面不是login
+  if (to.path !== "/login") {
+    // 用户不存在 返回登录页
+    if (!user) {
+      return "/login";
+    }
+  }
+});
+
 export default router;

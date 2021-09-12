@@ -11,9 +11,14 @@ const routes = [
     component: () => import("@/views/layout"),
     children: [
       {
-        path: "",
+        path: "", // layout的默认路由
         name: "home",
         component: () => import("@/views/home"),
+      },
+      {
+        path: "article",
+        name: "article",
+        component: () => import("@/views/article"),
       },
     ],
   },

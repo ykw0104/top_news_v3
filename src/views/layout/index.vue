@@ -27,7 +27,7 @@
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item>设置</el-dropdown-item>
-              <el-dropdown-item>退出</el-dropdown-item>
+              <el-dropdown-item @click="onLogout">退出</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -42,9 +42,12 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
+import { useRouter } from "vue-router";
 
 import AppAside from "./components/aside.vue";
 import { getUserProfile } from "../../api/user.js";
+
+import { ElMessageBox, ElMessage } from "element-plus";
 
 export default defineComponent({
   name: "LayoutIndex",
@@ -55,16 +58,38 @@ export default defineComponent({
     const layoutState = reactive({
       user: {}, // 用户信息
     });
-    const isCollapse = ref(false);
+    const isCollapse = ref(false); //侧边栏是否折叠
+    const router = useRouter();
 
     /* 请求用户信息 */
     getUserProfile().then((res) => {
       layoutState.user = res.data.data;
     });
 
+    /* 用户退出 */
+    const onLogout = () => {
+      ElMessageBox.confirm("确认退出吗?", "退出提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          window.localStorage.removeItem("user"); // 清除用户缓存
+          router.push("/login"); // 跳转到登录页
+        })
+        .catch(() => {
+          ElMessage({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+    };
+
     return {
       layoutState,
       isCollapse,
+
+      onLogout,
     };
   },
 });

@@ -5,6 +5,7 @@
     text-color="#fff"
     active-text-color="#ffd04b"
     :router="true"
+    :collapse="isCollapse"
   >
     <el-menu-item index="/">
       <i class="el-icon-s-home"></i>
@@ -38,10 +39,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   name: "AppAside",
+  props: ["isCollapse"],
   setup() {
     return {};
   },

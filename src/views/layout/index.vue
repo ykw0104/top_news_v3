@@ -1,8 +1,8 @@
 <template>
   <el-container class="layout-container">
     <!-- 1. 侧边栏 -->
-    <el-aside class="aside" width="200px">
-      <app-aside class="aside-menu" />
+    <el-aside class="aside" width="auto">
+      <app-aside class="aside-menu" :isCollapse="isCollapse" />
     </el-aside>
 
     <el-container>
@@ -10,7 +10,11 @@
       <el-header class="header">
         <!-- 2.1 顶部左侧 -->
         <div class="header-left">
-          <i class="header-left-icon el-icon-s-fold"></i>
+          <i
+            class="header-left-icon"
+            :class="isCollapse ? 'el-icon-s-fold' : 'el-icon-s-unfold'"
+            @click="isCollapse = !isCollapse"
+          ></i>
           <span class="header-desc">欲寄彩笺兼尺素,山长水阔知何处</span>
         </div>
         <!-- 2.2 顶部右侧 -->
@@ -51,13 +55,16 @@ export default defineComponent({
     const layoutState = reactive({
       user: {}, // 用户信息
     });
+    const isCollapse = ref(false);
 
+    /* 请求用户信息 */
     getUserProfile().then((res) => {
       layoutState.user = res.data.data;
     });
 
     return {
       layoutState,
+      isCollapse,
     };
   },
 });
@@ -72,7 +79,9 @@ export default defineComponent({
   left: 0;
 
   .aside {
+    overflow-y: hidden;
     background-color: #d3dce6;
+    // transition: all 0.3s ease;
 
     .aside-menu {
       height: 100%;

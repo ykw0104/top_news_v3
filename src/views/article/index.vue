@@ -3,14 +3,14 @@
     <el-card class="filter-card">
       <template #header>
         <div>
-          <!-- a. 面包屑路径导航 -->
+          <!---------------------------- a. 面包屑路径导航 ------------------------------------>
           <el-breadcrumb separator-class="el-icon-arrow-right">
             <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item>内容管理</el-breadcrumb-item>
           </el-breadcrumb>
         </div>
       </template>
-      <!-- b. 数据筛选表单-->
+      <!-------------------------------- b. 数据筛选表单 ---------------------------------------->
       <el-form
         ref="formRules"
         v-model="formData"
@@ -64,21 +64,38 @@
           共筛选出 xxxx 条数据:
         </div>
       </template>
-      <!-- c. 表格 -->
+
+      <!----------------------------------------- c. 表格 -------------------------------------------->
       <el-table
         class="list-table"
-        :data="tableData"
+        :data="articles"
+        :stripe="true"
         style="width: 100%"
         size="mini"
       >
-        <el-table-column prop="date" label="日期" width="180">
+        <el-table-column prop="" label="封面"></el-table-column>
+        <el-table-column prop="title" label="标题"></el-table-column>
+        <el-table-column prop="status" label="状态"></el-table-column>
+        <el-table-column prop="pubdate" label="发布时间"></el-table-column>
+        <el-table-column label="操作">
+          <template #default="scope">
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="mini"
+              circle
+            ></el-button>
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              circle
+            ></el-button>
+          </template>
         </el-table-column>
-        <el-table-column prop="name" label="姓名" width="180">
-        </el-table-column>
-        <el-table-column prop="address" label="地址"> </el-table-column>
       </el-table>
 
-      <!-- d. 分页 -->
+      <!----------------------------------------- d. 分页 ------------------------------------------>
       <el-pagination
         layout="prev, pager, next"
         :total="1000"
@@ -91,31 +108,32 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
 
+import { getArticles } from "../../api/article";
+
 export default defineComponent({
   name: "ArticleIndex",
   setup() {
-    // 表单双向绑定的数据
+    // 双向绑定的表单数据
     const formData = reactive({
       status: null,
       channelId: 0,
       rangeDate: "",
     });
-    const channels = ref({});
 
-    //表格数据
-    const tableData = ref([
-      {
-        date: "2016-05-02",
-        name: "王小虎",
-        address: "上海市普陀区金沙江路 1518 弄",
-      },
-    ]);
+    // 数据请求 - 获取文章的对象
+    const articles = ref([]);
+    getArticles().then((res) => {
+      articles.value = res.data.data.results;
+    });
+
+    // 数据请求
+    const channels = ref({});
 
     const loadArticles = () => {};
     return {
       formData,
       channels,
-      tableData,
+      articles,
     };
   },
 });

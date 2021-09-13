@@ -1,6 +1,6 @@
 <template>
   <el-menu
-    default-active="/"
+    :default-active="defaultActive"
     background-color="#002033"
     text-color="#fff"
     active-text-color="#ffd04b"
@@ -39,13 +39,28 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, watch, ref } from "vue";
+import { useRoute } from "vue-router";
 
 export default defineComponent({
   name: "AppAside",
   props: ["isCollapse"],
   setup() {
-    return {};
+    const route = useRoute();
+    const defaultActive = ref("/");
+
+    // 路由改变,导航菜单的高亮即default-active也随之改变
+    watch(
+      () => route.path,
+      (newValue) => {
+        defaultActive.value = newValue;
+      },
+      { immediate: true }
+    );
+
+    return {
+      defaultActive,
+    };
   },
 });
 </script>

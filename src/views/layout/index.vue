@@ -147,7 +147,7 @@ export default defineComponent({
   }
 
   .main {
-    background-color: #e9eef3;
+    background: url("./login-bg.jpeg") no-repeat center/cover;
   }
 }
 </style>

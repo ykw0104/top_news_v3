@@ -34,7 +34,7 @@
             <!-- TODO 设置null会报warning -->
             <!-- <el-option label="全部" :value="null"></el-option> -->
             <el-option
-              v-for="(channel, index) in channels"
+              v-for="(channel, index) in articlesData.channels"
               :key="channel.id"
               :label="channel.name"
               :value="channel.id"
@@ -74,7 +74,17 @@
         size="mini"
       >
         <!-- 第一列 -->
-        <el-table-column prop="" label="封面"></el-table-column>
+        <el-table-column label="封面">
+          <template #default="scope">
+            <img
+              v-if="scope.row.cover.images[0]"
+              class="article-image"
+              :src="scope.row.cover.images[0]"
+              alt=""
+            />
+            <img v-else class="article-image" src="./no-cover.jpeg" alt="" />
+          </template>
+        </el-table-column>
         <!-- 第二列 -->
         <el-table-column prop="title" label="标题"></el-table-column>
         <!-- 第三列 -->
@@ -132,16 +142,19 @@ import { getArticles } from "../../api/article";
 export default defineComponent({
   name: "ArticleIndex",
   setup() {
+    /********************************************************************************/
     // 双向绑定的表单数据
     const formData = reactive({
       status: null,
       channelId: 0,
       rangeDate: "",
     });
+    // 文章相关的数据
     const articlesData = reactive({
       articles: [], // 数据请求 - 获取文章的对象
+      channels: {}, // 数据请求
     });
-    const channels = ref({}); // 数据请求
+
     /********************************************************************************/
 
     // 数据请求 - 获取文章的对象
@@ -152,7 +165,6 @@ export default defineComponent({
     const loadArticles = () => {};
     return {
       formData,
-      channels,
       articlesData,
     };
   },
@@ -166,5 +178,11 @@ export default defineComponent({
 
 .list-table {
   margin-bottom: 20px;
+}
+
+.article-image {
+  width: 60px;
+  height: 40px;
+  background-size: cover;
 }
 </style>

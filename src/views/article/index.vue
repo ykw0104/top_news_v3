@@ -127,15 +127,16 @@
       <!----------------------------------------- d. 分页 ------------------------------------------>
       <el-pagination
         layout="prev, pager, next"
-        :total="1000"
+        :total="articlesData.totalCount"
         :background="true"
+        @current-change="onCurrentChange"
       />
     </el-card>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, reactive } from "vue";
 
 import { getArticles } from "../../api/article";
 
@@ -152,20 +153,35 @@ export default defineComponent({
     // 文章相关的数据
     const articlesData = reactive({
       articles: [], // 数据请求 - 获取文章的对象
+      totalCount: 0, // 文章总数
       channels: {}, // 数据请求
     });
 
     /********************************************************************************/
+    /* 封装的文章请求方法 */
+    const loadArticles = (page = 1) => {
+      getArticles({
+        page,
+        per_page: 10,
+      }).then((res) => {
+        const { results, total_count } = res.data.data;
+        articlesData.articles = results; // 文章数据
+        articlesData.totalCount = total_count; //// 文章总数
+      });
+    };
+    // 初始化文章请求
+    loadArticles(1);
 
-    // 数据请求 - 获取文章的对象
-    getArticles().then((res) => {
-      articlesData.articles = res.data.data.results;
-    });
+    // 分页组件相关
+    const onCurrentChange = (page) => {
+      loadArticles(page);
+    };
 
-    const loadArticles = () => {};
     return {
       formData,
       articlesData,
+
+      onCurrentChange,
     };
   },
 });

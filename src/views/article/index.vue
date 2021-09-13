@@ -68,15 +68,34 @@
       <!----------------------------------------- c. 表格 -------------------------------------------->
       <el-table
         class="list-table"
-        :data="articles"
+        :data="articlesData.articles"
         :stripe="true"
         style="width: 100%"
         size="mini"
       >
+        <!-- 第一列 -->
         <el-table-column prop="" label="封面"></el-table-column>
+        <!-- 第二列 -->
         <el-table-column prop="title" label="标题"></el-table-column>
-        <el-table-column prop="status" label="状态"></el-table-column>
+        <!-- 第三列 -->
+        <el-table-column label="状态">
+          <template #default="scope">
+            <el-tag v-if="scope.row.status === 0" type="info">草稿</el-tag>
+            <el-tag v-else-if="scope.row.status === 1">待审核</el-tag>
+            <el-tag v-else-if="scope.row.status === 2" type="success"
+              >审核通过</el-tag
+            >
+            <el-tag v-else-if="scope.row.status === 3" type="danger"
+              >审核失败</el-tag
+            >
+            <el-tag v-else-if="scope.row.status === 4" type="warning"
+              >已删除</el-tag
+            >
+          </template>
+        </el-table-column>
+        <!-- 第四列 -->
         <el-table-column prop="pubdate" label="发布时间"></el-table-column>
+        <!-- 第五例 -->
         <el-table-column label="操作">
           <template #default="scope">
             <el-button
@@ -119,21 +138,22 @@ export default defineComponent({
       channelId: 0,
       rangeDate: "",
     });
+    const articlesData = reactive({
+      articles: [], // 数据请求 - 获取文章的对象
+    });
+    const channels = ref({}); // 数据请求
+    /********************************************************************************/
 
     // 数据请求 - 获取文章的对象
-    const articles = ref([]);
     getArticles().then((res) => {
-      articles.value = res.data.data.results;
+      articlesData.articles = res.data.data.results;
     });
-
-    // 数据请求
-    const channels = ref({});
 
     const loadArticles = () => {};
     return {
       formData,
       channels,
-      articles,
+      articlesData,
     };
   },
 });

@@ -13,13 +13,13 @@
       <!-------------------------------- b. 数据筛选表单 ---------------------------------------->
       <el-form
         ref="formRules"
-        v-model="formData"
+        v-model="articlesQuery"
         label-width="70px"
         size="mini"
       >
         <!-- b1.根据状态查询 -->
         <el-form-item label="状态">
-          <el-radio-group v-model="formData.status">
+          <el-radio-group v-model="articlesQuery.status">
             <el-radio :label="null">全部</el-radio>
             <el-radio :label="0">草稿</el-radio>
             <el-radio :label="1">待审核</el-radio>
@@ -30,7 +30,7 @@
         </el-form-item>
         <!-- b2.根据频道查询 -->
         <el-form-item label="频道">
-          <el-select v-model="formData.channelId" placeholder="请选择频道">
+          <el-select v-model="articlesQuery.channelId" placeholder="请选择频道">
             <!-- TODO 设置null会报warning -->
             <!-- <el-option label="全部" :value="null"></el-option> -->
             <el-option
@@ -44,7 +44,7 @@
         <!-- b3.根据日期查询 -->
         <el-form-item label="日期" required>
           <el-date-picker
-            v-model="formData.rangeDate"
+            v-model="articlesQuery.rangeDate"
             format="YYYY-MM-DD"
             type="datetimerange"
             start-placeholder="开始日期"
@@ -60,9 +60,7 @@
 
     <el-card>
       <template #header>
-        <div>
-          共筛选出 xxxx 条数据:
-        </div>
+        <div>共筛选出 {{ articlesData.totalCount }} 条数据:</div>
       </template>
 
       <!----------------------------------------- c. 表格 -------------------------------------------->
@@ -128,6 +126,7 @@
       <el-pagination
         layout="prev, pager, next"
         :total="articlesData.totalCount"
+        :page-size="articlesQuery.pageSize"
         :background="true"
         @current-change="onCurrentChange"
       />
@@ -145,15 +144,18 @@ export default defineComponent({
   setup() {
     /********************************************************************************/
     // 双向绑定的表单数据
-    const formData = reactive({
-      status: null,
-      channelId: 0,
-      rangeDate: "",
+    // 请求文章-请求参数
+    const articlesQuery = reactive({
+      pageSize: 10, // 每页显示数量
+      status: null, // 可选, 文章状态 null(全部),0, 1, 2, 3, 4
+      channelId: 0, // 可选
+      rangeDate: "", // 可选
     });
-    // 文章相关的数据
+    // 请求文章后获取的数据
     const articlesData = reactive({
-      articles: [], // 数据请求 - 获取文章的对象
+      articles: [], // 获取文章对象的数组
       totalCount: 0, // 文章总数
+
       channels: {}, // 数据请求
     });
 
@@ -161,26 +163,28 @@ export default defineComponent({
     /* 封装的文章请求方法 */
     const loadArticles = (page = 1) => {
       getArticles({
-        page,
-        per_page: 10,
+        page, // 当前第几页
+        per_page: articlesQuery.pageSize,
+        status: articlesQuery.status,
       }).then((res) => {
         const { results, total_count } = res.data.data;
         articlesData.articles = results; // 文章数据
         articlesData.totalCount = total_count; //// 文章总数
       });
     };
-    // 初始化文章请求
+    // 文章请求 - 初始化
     loadArticles(1);
 
     // 分页组件相关
     const onCurrentChange = (page) => {
-      loadArticles(page);
+      loadArticles(page); // 文章请求 - 分页
     };
 
     return {
-      formData,
+      articlesQuery,
       articlesData,
 
+      loadArticles,
       onCurrentChange,
     };
   },

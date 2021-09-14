@@ -74,13 +74,28 @@
         <!-- 第一列 -->
         <el-table-column label="封面">
           <template #default="scope">
-            <img
+            <!-- <img
               v-if="scope.row.cover.images[0]"
               class="article-image"
               :src="scope.row.cover.images[0]"
               alt=""
             />
-            <img v-else class="article-image" src="./no-cover.jpeg" alt="" />
+            <img v-else class="article-image" src="./no-cover.jpeg" alt="" /> -->
+            <el-image
+              style="width: 80px; height: 60px"
+              :src="scope.row.cover.images[0]"
+              fit="cover"
+              lazy
+            >
+              <template #placeholder>
+                <div class="image-slot">加载中<span class="dot">...</span></div>
+              </template>
+              <template #error>
+                <div class="image-slot">
+                  <img class="article-image" src="./no-cover.jpeg" alt="" />
+                </div>
+              </template>
+            </el-image>
           </template>
         </el-table-column>
         <!-- 第二列 -->
@@ -151,7 +166,7 @@ export default defineComponent({
       rangeDate: "", // 可选
     });
 
-    // 保存请求获取的数据
+    // 保存文章请求的数据
     const articlesData = reactive({
       articles: [], // 获取文章对象的数组
       totalCount: 0, // 文章总数
@@ -181,14 +196,14 @@ export default defineComponent({
       });
     };
 
-    /* 初始化请求 */
-    loadArticles(1); // 文章请求
-    loadChannels(); // 文章频道请求
-
-    // 分页组件相关
+    /* 分页中查询某页文章的方法 */
     const onCurrentChange = (page) => {
       loadArticles(page); // 文章请求 - 分页
     };
+
+    /* 初始化请求 */
+    loadArticles(1); // 文章请求
+    loadChannels(); // 文章频道请求
 
     return {
       articlesQuery,
@@ -211,8 +226,8 @@ export default defineComponent({
 }
 
 .article-image {
-  width: 60px;
-  height: 40px;
+  width: 80px;
+  height: 60px;
   background-size: cover;
 }
 </style>

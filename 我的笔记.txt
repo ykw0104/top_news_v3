@@ -1,0 +1,18 @@
+1. 页面布局
+2. 编写axios请求方法
+        axios.create: 配置baseUrl等
+        axios请求方法: 配置method(get,post), url, params, data
+        axios拦截: 在header里配置tokens等
+3. vue中定义变量(ref, reactive),  引用axios请求方法, 在then(res=>{  vue中的变量保存请求结果 })
+4. 在vue的html中显示数据
+
+例子:
+点击分页时- > 当前页作为参数传入axios请求方法 -> axios返回结果的值更新了vue定义的变量 -> 在vue的html显示数据
+
+表单筛选完点击查询 -> 表单的数据作为参数传入axios请求方法 -> axios返回结果的值更新了vue定义的变量 -> 在vue的html显示数据
+  •	表单里的值和vue定义的查询条件的变量双向绑定
+  •	vue定义的查询条件的变量赋值给axios请求方法里的params
+
+
+
+ 

@@ -11,3 +11,11 @@ export const getArticles = (articleQueryData) => {
     params: articleQueryData,
   });
 };
+
+/* 获取文章频道 */
+export const getArticlesChannels = () => {
+  return request({
+    method: "GET",
+    url: "/mp/v1_0/channels",
+  });
+};

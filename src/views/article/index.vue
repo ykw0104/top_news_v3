@@ -32,7 +32,7 @@
         <el-form-item label="频道">
           <el-select v-model="articlesQuery.channelId" placeholder="请选择频道">
             <!-- TODO 设置null会报warning -->
-            <!-- <el-option label="全部" :value="null"></el-option> -->
+            <el-option label="全部" :value="0"></el-option>
             <el-option
               v-for="(channel, index) in articlesData.channels"
               :key="channel.id"
@@ -137,43 +137,53 @@
 <script lang="ts">
 import { defineComponent, reactive } from "vue";
 
-import { getArticles } from "../../api/article";
+import { getArticles, getArticlesChannels } from "../../api/article";
 
 export default defineComponent({
   name: "ArticleIndex",
   setup() {
     /********************************************************************************/
-    // 双向绑定的表单数据
-    // 请求文章-请求参数
+    // 请求文章的参数
     const articlesQuery = reactive({
       pageSize: 10, // 每页显示数量
       status: null, // 可选, 文章状态 null(全部),0, 1, 2, 3, 4
-      channelId: 0, // 可选
+      channelId: 0, // 可选, 频道ID
       rangeDate: "", // 可选
     });
-    // 请求文章后获取的数据
+
+    // 保存请求获取的数据
     const articlesData = reactive({
       articles: [], // 获取文章对象的数组
       totalCount: 0, // 文章总数
 
-      channels: {}, // 数据请求
+      channels: [], // 文章频道
     });
 
     /********************************************************************************/
-    /* 封装的文章请求方法 */
+    /* 请求文章的方法 */
     const loadArticles = (page = 1) => {
       getArticles({
         page, // 当前第几页
-        per_page: articlesQuery.pageSize,
-        status: articlesQuery.status,
+        per_page: articlesQuery.pageSize, // 每页显示数量
+        status: articlesQuery.status, // 文章状态
+        channel_id:
+          articlesQuery.channelId !== 0 ? articlesQuery.channelId : null, // 文章频道id
       }).then((res) => {
         const { results, total_count } = res.data.data;
         articlesData.articles = results; // 文章数据
-        articlesData.totalCount = total_count; //// 文章总数
+        articlesData.totalCount = total_count; // 文章总数
       });
     };
-    // 文章请求 - 初始化
-    loadArticles(1);
+    /* 请求文章频道的方法 */
+    const loadChannels = () => {
+      getArticlesChannels().then((res) => {
+        articlesData.channels = res.data.data.channels;
+      });
+    };
+
+    /* 初始化请求 */
+    loadArticles(1); // 文章请求
+    loadChannels(); // 文章频道请求
 
     // 分页组件相关
     const onCurrentChange = (page) => {

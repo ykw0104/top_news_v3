@@ -49,7 +49,9 @@
         </el-form-item>
         <!-- b4.执行查询 -->
         <el-form-item>
-          <el-button type="primary" @click="loadArticles(1)">查询</el-button>
+          <el-button type="primary" :disabled="loading" @click="loadArticles(1)"
+            >查询</el-button
+          >
         </el-form-item>
       </el-form>
     </el-card>
@@ -66,6 +68,7 @@
         :stripe="true"
         style="width: 100%"
         size="mini"
+        v-loading="loading"
       >
         <!-- 第一列 -->
         <el-table-column label="封面">
@@ -139,6 +142,7 @@
         :total="articlesData.totalCount"
         :page-size="articlesQuery.pageSize"
         :background="true"
+        :disabled="loading"
         @current-change="onCurrentChange"
       />
     </el-card>
@@ -146,7 +150,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from "vue";
+import { defineComponent, reactive, ref } from "vue";
 
 import { getArticles, getArticlesChannels } from "../../api/article";
 
@@ -171,10 +175,12 @@ export default defineComponent({
       channels: [], // 文章频道
     });
 
+    const loading = ref(false);
     /********************************************************************************/
     /* 请求文章的方法 */
 
     const loadArticles = (page = 1) => {
+      loading.value = true;
       getArticles({
         page, // 1. 当前第几页
         per_page: articlesQuery.pageSize, // 2. 每页显示数量
@@ -191,6 +197,8 @@ export default defineComponent({
         const { results, total_count } = res.data.data;
         articlesData.articles = results; // 文章数据
         articlesData.totalCount = total_count; // 文章总数
+
+        loading.value = false;
       });
     };
 
@@ -213,6 +221,7 @@ export default defineComponent({
     return {
       articlesQuery,
       articlesData,
+      loading,
 
       loadArticles,
       onCurrentChange,
@@ -231,8 +240,8 @@ export default defineComponent({
 }
 
 .article-image {
-  width: 80px;
-  height: 60px;
+  width: 60px;
+  height: 45px;
   background-size: cover;
 }
 </style>

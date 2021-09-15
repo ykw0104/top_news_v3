@@ -11,12 +11,7 @@
         </div>
       </template>
       <!-------------------------------- b. 数据筛选表单 ---------------------------------------->
-      <el-form
-        ref="formRules"
-        v-model="articlesQuery"
-        label-width="70px"
-        size="mini"
-      >
+      <el-form v-model="articlesQuery" label-width="70px" size="mini">
         <!-- b1.根据状态查询 -->
         <el-form-item label="状态">
           <el-radio-group v-model="articlesQuery.status">
@@ -45,8 +40,9 @@
         <el-form-item label="日期" required>
           <el-date-picker
             v-model="articlesQuery.rangeDate"
-            format="YYYY-MM-DD"
             type="datetimerange"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
           />
@@ -161,9 +157,10 @@ export default defineComponent({
     // 请求文章的参数
     const articlesQuery = reactive({
       pageSize: 10, // 每页显示数量
+      // 可选的请求参数不传时值都是null
       status: null, // 可选, 文章状态 null(全部),0, 1, 2, 3, 4
-      channelId: 0, // 可选, 频道ID
-      rangeDate: "", // 可选
+      channelId: null, // 可选, 频道ID
+      rangeDate: null, // 可选, [开始时间, 结束时间]
     });
 
     // 保存文章请求的数据
@@ -176,19 +173,27 @@ export default defineComponent({
 
     /********************************************************************************/
     /* 请求文章的方法 */
+
     const loadArticles = (page = 1) => {
       getArticles({
-        page, // 当前第几页
-        per_page: articlesQuery.pageSize, // 每页显示数量
-        status: articlesQuery.status, // 文章状态
+        page, // 1. 当前第几页
+        per_page: articlesQuery.pageSize, // 2. 每页显示数量
+        status: articlesQuery.status, // 3. 文章状态 null(全部),0, 1, 2, 3, 4
         channel_id:
-          articlesQuery.channelId !== 0 ? articlesQuery.channelId : null, // 文章频道id
+          articlesQuery.channelId !== 0 ? articlesQuery.channelId : null, // 4. 文章频道id
+        begin_pubdate: articlesQuery.rangeDate
+          ? articlesQuery.rangeDate[0]
+          : null, // 5. 开始日期
+        end_pubdate: articlesQuery.rangeDate
+          ? articlesQuery.rangeDate[1]
+          : null, // 6. 截止日期
       }).then((res) => {
         const { results, total_count } = res.data.data;
         articlesData.articles = results; // 文章数据
         articlesData.totalCount = total_count; // 文章总数
       });
     };
+
     /* 请求文章频道的方法 */
     const loadChannels = () => {
       getArticlesChannels().then((res) => {

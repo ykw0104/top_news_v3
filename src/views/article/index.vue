@@ -87,7 +87,9 @@
               lazy
             >
               <template #placeholder>
-                <div class="image-slot">加载中<span class="dot">...</span></div>
+                <div class="image-slot image-loading">
+                  加载中<span class="dot">...</span>
+                </div>
               </template>
               <template #error>
                 <div class="image-slot">
@@ -142,6 +144,7 @@
         layout="prev, pager, next"
         :total="articlesData.totalCount"
         :page-size="articlesQuery.pageSize"
+        v-model:current-page="currentPage"
         :background="true"
         :disabled="loading"
         @current-change="onCurrentChange"
@@ -182,6 +185,8 @@ export default defineComponent({
       channels: [], // 文章频道
     });
 
+    const currentPage = ref(1); //当前页码
+
     const loading = ref(false);
     /********************************************************************************/
     /* 请求文章的方法 */
@@ -218,7 +223,7 @@ export default defineComponent({
 
     /* 分页中查询某页文章的方法 */
     const onCurrentChange = (page) => {
-      loadArticles(page); // 文章请求 - 分页
+      loadArticles(page); // 分页 - 加载文章
     };
 
     /* 删除文章 */
@@ -229,9 +234,9 @@ export default defineComponent({
         type: "warning",
       })
         .then(() => {
-          // 删除文章
-          deleteArticle(articleId).then((res) => {
-            console.log(res);
+          // 删除文章, JSONbig处理后, articleId需要toString()
+          deleteArticle(articleId.toString()).then((res) => {
+            loadArticles(currentPage.value); // 删除后 重新加载当前页文章
           });
         })
         .catch(() => {
@@ -242,12 +247,13 @@ export default defineComponent({
         });
     };
     /* 初始化请求 */
-    loadArticles(1); // 文章请求
-    loadChannels(); // 文章频道请求
+    loadArticles(1); // 初始化 加载第一页
+    loadChannels(); // 加载文章频道
 
     return {
       articlesQuery,
       articlesData,
+      currentPage,
       loading,
 
       loadArticles,
@@ -267,9 +273,16 @@ export default defineComponent({
   margin-bottom: 20px;
 }
 
+.image-loading {
+  line-height: 60px;
+  font-size: 16px;
+  text-align: center;
+  color: #999;
+}
+
 .article-image {
-  width: 60px;
-  height: 45px;
+  width: 80px;
+  height: 60px;
   background-size: cover;
 }
 </style>

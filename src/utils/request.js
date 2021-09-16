@@ -14,6 +14,7 @@ const request = axios.create({
         return JSONbig.parse(data); // JSONbig来处理, 防止id的长度过长产生精度不对的问题
         // return JSON.parse(data); // axios默认的处理
       } catch (error) {
+        console.log("JSONbig转换失败", error);
         return data;
       }
     },

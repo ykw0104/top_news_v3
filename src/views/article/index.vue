@@ -131,6 +131,7 @@
               icon="el-icon-delete"
               size="mini"
               circle
+              @click="onDeleteArticle(scope.row.id)"
             ></el-button>
           </template>
         </el-table-column>
@@ -152,7 +153,13 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from "vue";
 
-import { getArticles, getArticlesChannels } from "../../api/article";
+import { ElMessageBox, ElMessage } from "element-plus";
+
+import {
+  getArticles,
+  getArticlesChannels,
+  deleteArticle,
+} from "../../api/article";
 
 export default defineComponent({
   name: "ArticleIndex",
@@ -214,6 +221,26 @@ export default defineComponent({
       loadArticles(page); // 文章请求 - 分页
     };
 
+    /* 删除文章 */
+    const onDeleteArticle = (articleId) => {
+      ElMessageBox.confirm("将删除该文章, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          // 删除文章
+          deleteArticle(articleId).then((res) => {
+            console.log(res);
+          });
+        })
+        .catch(() => {
+          ElMessage({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+    };
     /* 初始化请求 */
     loadArticles(1); // 文章请求
     loadChannels(); // 文章频道请求
@@ -225,6 +252,7 @@ export default defineComponent({
 
       loadArticles,
       onCurrentChange,
+      onDeleteArticle,
     };
   },
 });

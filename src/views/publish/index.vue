@@ -12,11 +12,16 @@
         </el-breadcrumb>
       </template>
       <!--------------------------------b. 表单内容 ------------------------------------------------------------->
-      <el-form :model="article" label-width="50px">
-        <el-form-item label="标题">
+      <el-form
+        ref="articleRef"
+        :model="article"
+        :rules="articleRules"
+        label-width="60px"
+      >
+        <el-form-item label="标题" prop="title">
           <el-input v-model="article.title"></el-input>
         </el-form-item>
-        <el-form-item label="内容">
+        <el-form-item label="内容" prop="content">
           <el-input type="textarea" v-model="article.content"></el-input>
         </el-form-item>
         <el-form-item label="封面">
@@ -27,7 +32,7 @@
             <el-radio :label="-1">自动</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="频道">
+        <el-form-item label="频道" prop="channel_id">
           <el-select v-model="article.channel_id" placeholder="请选择频道">
             <el-option
               v-for="(channel, index) in channels"
@@ -62,6 +67,8 @@ import { ElMessage } from "element-plus";
 export default defineComponent({
   name: "PublishIndex",
   setup() {
+    const articleRef = ref(null);
+
     const article = reactive({
       title: "", // 文章标题
       content: "", // 文章内容
@@ -71,6 +78,35 @@ export default defineComponent({
       },
       channel_id: null,
     });
+
+    const articleRules = reactive({
+      title: [
+        { required: true, message: "请输入文章标题", trigger: "change" },
+        {
+          min: 5,
+          max: 30,
+          message: "长度在 5 到 30 个字符",
+          trigger: "change",
+        },
+      ],
+      content: [
+        { required: true, message: "请输入文章内容", trigger: "change" },
+        {
+          validator: (rule, value, callback) => {
+            if (value === "<p></p>") {
+              callback(new Error("请输入文章内容"));
+            } else {
+              callback();
+            }
+          },
+          trigger: "change",
+        },
+      ],
+      channel_id: [
+        { required: true, message: "请选择文章频道", trigger: "change" },
+      ],
+    });
+
     const channels = ref([]); // 文章频道
 
     const route = useRoute();
@@ -82,39 +118,49 @@ export default defineComponent({
       });
     };
 
-    /* 1. 路由路径有id值, 修改文章  
-       2. 路由路径没有id值, 添加文章  
+    /* 1. 路由路径有id值, 修改文章
+       2. 路由路径没有id值, 添加文章
     */
     const onPublish = (draft) => {
-      if (route.query.id) {
-        updateArticle(route.query.id, article, draft)
-          .then((res) => {
-            console.log(res);
+      articleRef.value.validate((valid) => {
+        if (valid) {
+          // a. 表单验证通过
+          if (route.query.id) {
+            // a1. 修改文章
+            updateArticle(route.query.id, article, draft)
+              .then((res) => {
+                console.log(res);
 
-            ElMessage.success({
-              message: "修改成功",
-              type: "success",
-            });
-          })
-          .catch((err) => {
-            ElMessage.error(`${err}`);
-          });
+                ElMessage.success({
+                  message: "修改成功",
+                  type: "success",
+                });
+              })
+              .catch((err) => {
+                ElMessage.error(`${err}`);
+              });
 
-        router.push("/article"); // 修改成功,跳转到内容管理页面
-      } else {
-        addArticle(article, draft)
-          .then((res) => {
-            ElMessage.success({
-              message: "添加成功",
-              type: "success",
-            });
+            router.push("/article"); // 修改成功,跳转到内容管理页面
+          } else {
+            // b. 添加文章
+            addArticle(article, draft)
+              .then((res) => {
+                ElMessage.success({
+                  message: "添加成功",
+                  type: "success",
+                });
 
-            router.push("/article"); // 添加成功,跳转到内容管理页面
-          })
-          .catch((err) => {
-            ElMessage.error(`${err}`);
-          });
-      }
+                router.push("/article"); // 添加成功,跳转到内容管理页面
+              })
+              .catch((err) => {
+                ElMessage.error(`${err}`);
+              });
+          }
+        } else {
+          // b. 表达验证失败
+          return false;
+        }
+      });
     };
 
     /* 加载文章 */
@@ -143,7 +189,9 @@ export default defineComponent({
     }
 
     return {
+      articleRef,
       article,
+      articleRules,
       channels,
 
       onPublish,

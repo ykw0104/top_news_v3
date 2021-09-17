@@ -6,7 +6,9 @@
         <!---------------------------- a. 面包屑路径导航 -------------------------------------------------------->
         <el-breadcrumb separator-class="el-icon-arrow-right">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-          <el-breadcrumb-item>发布文章</el-breadcrumb-item>
+          <el-breadcrumb-item>
+            {{ $route.query.id ? "修改文章" : "发布文章" }}
+          </el-breadcrumb-item>
         </el-breadcrumb>
       </template>
       <!--------------------------------b. 表单内容 ------------------------------------------------------------->
@@ -46,7 +48,14 @@
 
 <script>
 import { defineComponent, reactive, ref } from "vue";
-import { getArticlesChannels, addArticle } from "../../api/article";
+import { useRoute } from "vue-router";
+
+import {
+  getArticlesChannels,
+  addArticle,
+  updateArticle,
+  getArticle,
+} from "../../api/article";
 
 import { ElMessage } from "element-plus";
 
@@ -64,6 +73,8 @@ export default defineComponent({
     });
     const channels = ref([]); // 文章频道
 
+    const route = useRoute();
+    // ---------------------------------------------------------------------------------------------------
     /* 加载文章频道 */
     const loadArticlesChannels = () => {
       getArticlesChannels().then((res) => {
@@ -71,21 +82,66 @@ export default defineComponent({
       });
     };
 
-    /* 发布文章 */
+    /* 1. 路由路径有id值, 修改文章  
+       2. 路由路径没有id值, 添加文章  
+    */
     const onPublish = (draft) => {
-      addArticle(article, draft)
-        .then((res) => {
-          ElMessage.success({
-            message: "发出成功",
-            type: "success",
+      if (route.query.id) {
+        updateArticle(route.query.id, article, draft)
+          .then((res) => {
+            console.log(res);
+
+            ElMessage.success({
+              message: "修改成功",
+              type: "success",
+            });
+          })
+          .catch((err) => {
+            ElMessage.error(`${err}`);
           });
-        })
-        .catch((err) => {
-          ElMessage.error(`${err}`);
-        });
+
+        router.push("/article"); // 修改成功,跳转到内容管理页面
+      } else {
+        addArticle(article, draft)
+          .then((res) => {
+            ElMessage.success({
+              message: "添加成功",
+              type: "success",
+            });
+
+            router.push("/article"); // 添加成功,跳转到内容管理页面
+          })
+          .catch((err) => {
+            ElMessage.error(`${err}`);
+          });
+      }
     };
 
+    /* 加载文章 */
+    const loadArticle = () => {
+      getArticle(route.query.id).then((res) => {
+        const {
+          title,
+          content,
+          cover: { type, images },
+          channel_id,
+        } = res.data.data;
+        article.title = title;
+        article.content = content;
+        article.cover.type = type;
+        article.cover.images = images;
+        article.channel_id = channel_id;
+      });
+    };
+    // ---------------------------------------------------------------------------------------------------
+
     loadArticlesChannels(); // 初始化 文章频道
+
+    /* 路由路径参数有id, 显示文章内容 */
+    if (route.query.id) {
+      loadArticle();
+    }
+
     return {
       article,
       channels,

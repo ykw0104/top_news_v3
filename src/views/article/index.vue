@@ -127,6 +127,9 @@
               icon="el-icon-edit"
               size="mini"
               circle
+              @click="
+                $router.push({ path: '/publish', query: { id: scope.row.id } })
+              "
             ></el-button>
             <el-button
               type="danger"

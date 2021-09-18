@@ -11,7 +11,7 @@
         </div>
       </template>
       <!---------------------------- b. 图片内容部分 ------------------------------------>
-      <div style="padding-bottom: 20px;">
+      <div class="img-radio">
         <!-- b1. 按钮组 -->
         <el-radio-group
           v-model="collectRadio"
@@ -21,6 +21,10 @@
           <el-radio-button :label="false">全部</el-radio-button>
           <el-radio-button :label="true">收藏</el-radio-button>
         </el-radio-group>
+
+        <el-button class="img-radio-right" size="mini" type="success"
+          >上传素材</el-button
+        >
       </div>
 
       <!-- b2. 图片显示 -->
@@ -81,6 +85,16 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.img-radio {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 20px;
+
+  .img-radio-right {
+    margin-right: 10px;
+  }
+}
+
 .image-col {
   margin-bottom: 1px;
 }

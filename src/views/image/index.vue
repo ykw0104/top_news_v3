@@ -13,25 +13,31 @@
       <!---------------------------- b. 图片内容部分 ------------------------------------>
       <div style="padding-bottom: 20px;">
         <!-- b1. 按钮组 -->
-        <el-radio-group v-model="radio1" size="mini">
-          <el-radio-button label="全部"></el-radio-button>
-          <el-radio-button label="收藏"></el-radio-button>
+        <el-radio-group
+          v-model="collectRadio"
+          size="mini"
+          @change="loadImages(collectRadio)"
+        >
+          <el-radio-button :label="false">全部</el-radio-button>
+          <el-radio-button :label="true">收藏</el-radio-button>
         </el-radio-group>
       </div>
+
       <!-- b2. 图片显示 -->
       <el-row :gutter="5">
         <el-col
-          v-for="n in 8"
+          class="image-col"
+          v-for="(image, index) in images"
+          :key="index"
           :xs="12"
           :sm="6"
           :md="6"
           :lg="4"
           :xl="4"
-          style="margin-bottom:1px;"
         >
           <el-image
             style="height:100px"
-            src="https://img1.baidu.com/it/u=1802385373,863253983&fm=26&fmt=auto"
+            :src="image.url"
             fit="cover"
           ></el-image>
         </el-col>
@@ -43,16 +49,39 @@
 <script>
 import { defineComponent, ref } from "vue";
 
+import { getImages } from "../../api/image";
+
 export default defineComponent({
   name: "ImageIndex",
   setup() {
-    const radio1 = ref("全部");
+    // ----------------------------------------------------------------------
+
+    const collectRadio = ref(false); // 默认查询全部
+    const images = ref([]); // 图片数据
+    // ----------------------------------------------------------------------
+    /* 加载图片:collect: false(全部), true(收藏) */
+    const loadImages = (collect = false) => {
+      getImages({
+        collect,
+      }).then((res) => {
+        images.value = res.data.data.results;
+      });
+    };
+    // ----------------------------------------------------------------------
+    loadImages(false); // 初始化加载图片
 
     return {
-      radio1,
+      images,
+      collectRadio,
+
+      loadImages,
     };
   },
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.image-col {
+  margin-bottom: 1px;
+}
+</style>

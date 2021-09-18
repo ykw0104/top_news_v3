@@ -118,7 +118,7 @@ export default defineComponent({
       });
     };
 
-    /* 1. 路由路径有id值, 修改文章
+    /* 1. 修改文章
        2. 路由路径没有id值, 添加文章
     */
     const onPublish = (draft) => {

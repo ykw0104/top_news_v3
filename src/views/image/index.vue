@@ -16,7 +16,7 @@
         <el-radio-group
           v-model="collectRadio"
           size="mini"
-          @change="loadImages(collectRadio)"
+          @change="loadImages(1)"
         >
           <el-radio-button :label="false">全部</el-radio-button>
           <el-radio-button :label="true">收藏</el-radio-button>
@@ -50,6 +50,14 @@
           ></el-image>
         </el-col>
       </el-row>
+
+      <!-- b3. 分页 -->
+      <el-pagination
+        layout="prev, pager, next"
+        :total="totalCount"
+        :page-size="pageSize"
+        @current-change="onPageChange"
+      />
     </el-card>
 
     <!---------------------------- 上传素材的弹出框 ------------------------------------>
@@ -95,7 +103,10 @@ export default defineComponent({
     // ----------------------------------------------------------------------
     const collectRadio = ref(false); // 默认查询全部
     const images = ref([]); // 图片数据
+    const totalCount = ref(0); // 图片总数
+    const pageSize = ref(24); // 每页显示多少条
     const dialogUploadVisible = ref(false); // 控制上传素材的弹框
+    // 设置el-upload上传需要的头部信息
     const uploadHeaders = ref({
       Authorization: `Bearer ${
         JSON.parse(window.localStorage.getItem("user")).token
@@ -103,30 +114,41 @@ export default defineComponent({
     });
     // ----------------------------------------------------------------------
     /* 加载图片:collect: false(全部), true(收藏) */
-    const loadImages = (collect = false) => {
+    const loadImages = (page = 1) => {
       getImages({
-        collect,
+        collect: collectRadio.value,
+        page,
+        per_page: pageSize.value,
       }).then((res) => {
         images.value = res.data.data.results;
+        totalCount.value = res.data.data.total_count;
       });
     };
 
     /* 图片上传成功后的操作 */
     const onUploadSuccess = () => {
       dialogUploadVisible.value = false; // 关闭上传弹框
-      loadImages(false); // 更新列表
+      loadImages(1); // 更新列表
+    };
+
+    /* 分页的页码改变时 */
+    const onPageChange = (page) => {
+      loadImages(page);
     };
     // ----------------------------------------------------------------------
-    loadImages(false); // 初始化加载图片
+    loadImages(1); // 初始化加载图片
 
     return {
       images,
+      totalCount,
+      pageSize,
       collectRadio,
       dialogUploadVisible,
       uploadHeaders,
 
       loadImages,
       onUploadSuccess,
+      onPageChange,
     };
   },
 });

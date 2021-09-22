@@ -56,6 +56,7 @@
         layout="prev, pager, next"
         :total="totalCount"
         :page-size="pageSize"
+        v-model:current-page="currentPage"
         @current-change="onPageChange"
       />
     </el-card>
@@ -97,6 +98,8 @@ import { defineComponent, ref } from "vue";
 
 import { getImages } from "../../api/image";
 
+import { ElMessage } from "element-plus";
+
 export default defineComponent({
   name: "ImageIndex",
   setup() {
@@ -105,6 +108,7 @@ export default defineComponent({
     const images = ref([]); // 图片数据
     const totalCount = ref(0); // 图片总数
     const pageSize = ref(24); // 每页显示多少条
+    const currentPage = ref(1); // 当前页码
     const dialogUploadVisible = ref(false); // 控制上传素材的弹框
     // 设置el-upload上传需要的头部信息
     const uploadHeaders = ref({
@@ -115,6 +119,8 @@ export default defineComponent({
     // ----------------------------------------------------------------------
     /* 加载图片:collect: false(全部), true(收藏) */
     const loadImages = (page = 1) => {
+      currentPage.value = page; // 防止请求页的数据和页码不对应
+      // 请求图片
       getImages({
         collect: collectRadio.value,
         page,
@@ -128,7 +134,12 @@ export default defineComponent({
     /* 图片上传成功后的操作 */
     const onUploadSuccess = () => {
       dialogUploadVisible.value = false; // 关闭上传弹框
-      loadImages(1); // 更新列表
+      loadImages(currentPage.value); // 更新列表
+
+      ElMessage.success({
+        message: "上传成功",
+        type: "success",
+      });
     };
 
     /* 分页的页码改变时 */
@@ -142,6 +153,7 @@ export default defineComponent({
       images,
       totalCount,
       pageSize,
+      currentPage,
       collectRadio,
       dialogUploadVisible,
       uploadHeaders,

@@ -50,13 +50,16 @@
           ></el-image>
 
           <div class="img-action">
-            <i
-              :class="{
-                'el-icon-star-on': image.is_collected,
-                'el-icon-star-off': !image.is_collected,
-              }"
+            <el-button
+              :icon="
+                image.is_collected ? 'el-icon-star-on' : 'el-icon-star-off'
+              "
+              type="warning"
+              circle
+              size="mini"
+              :loading="image.loading"
               @click="onCollect(image)"
-            ></i>
+            ></el-button>
             <i class="el-icon-delete"></i>
           </div>
         </el-col>
@@ -137,7 +140,12 @@ export default defineComponent({
         page,
         per_page: pageSize.value,
       }).then((res) => {
-        images.value = res.data.data.results;
+        const results = res.data.data.results; // 获取结果
+        results.forEach((img) => {
+          img.loading = false; // 手动添加图片收藏按钮的loading效果
+        });
+        images.value = results; // 保存图片数据
+
         totalCount.value = res.data.data.total_count;
       });
     };
@@ -160,9 +168,11 @@ export default defineComponent({
 
     /* 图片收藏处理 */
     const onCollect = (image) => {
+      image.loading = true; // 开启收藏按钮的loading
       // 图片收藏或取消收藏
       collectImage(image.id, !image.is_collected).then((res) => {
         image.is_collected = !image.is_collected; // 页面上的视图更新
+        image.loading = false; // 关闭收藏按钮的loading
       });
     };
     // ----------------------------------------------------------------------

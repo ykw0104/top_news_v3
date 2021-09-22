@@ -59,8 +59,15 @@
               size="mini"
               :loading="image.loading"
               @click="onCollect(image)"
-            ></el-button>
-            <i class="el-icon-delete"></i>
+            />
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              circle
+              :loading="image.loading"
+              @click="onDelete(image)"
+            />
           </div>
         </el-col>
       </el-row>
@@ -110,7 +117,7 @@
 <script>
 import { defineComponent, ref } from "vue";
 
-import { getImages, collectImage } from "../../api/image";
+import { getImages, collectImage, deleteImage } from "../../api/image";
 
 import { ElMessage } from "element-plus";
 
@@ -142,7 +149,7 @@ export default defineComponent({
       }).then((res) => {
         const results = res.data.data.results; // 获取结果
         results.forEach((img) => {
-          img.loading = false; // 手动添加图片收藏按钮的loading效果
+          img.loading = false; // 手动添加按钮的loading效果
         });
         images.value = results; // 保存图片数据
 
@@ -175,6 +182,15 @@ export default defineComponent({
         image.loading = false; // 关闭收藏按钮的loading
       });
     };
+
+    /* 图片删除处理 */
+    const onDelete = (image) => {
+      image.loading = true; // 开启删除按钮的loading
+      deleteImage(image.id).then((res) => {
+        loadImages(currentPage.value);
+        image.loading = false; // 关闭删除按钮的loading
+      });
+    };
     // ----------------------------------------------------------------------
     loadImages(1); // 初始化加载图片
 
@@ -191,6 +207,7 @@ export default defineComponent({
       onUploadSuccess,
       onPageChange,
       onCollect,
+      onDelete,
     };
   },
 });

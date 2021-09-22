@@ -30,6 +30,11 @@ const routes = [
         name: "image",
         component: () => import("@/views/image"),
       },
+      {
+        path: "/comment",
+        name: "comment",
+        component: () => import("@/views/comment"),
+      },
     ],
   },
 ];

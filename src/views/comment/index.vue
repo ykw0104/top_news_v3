@@ -35,6 +35,8 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 
+import { getArticles } from "../../api/article";
+
 export default defineComponent({
   name: "CommentIndex",
   setup() {
@@ -46,11 +48,23 @@ export default defineComponent({
       },
     ]);
 
+    const articles = ref([]);
+    // -------------------------------------------------------------------------
+    const loadArticles = () => {
+      getArticles({
+        response_type: "comment",
+      }).then((res) => {
+        articles.value = res.data.data.results;
+      });
+    };
+
     const handleSizeChange = () => {};
     const handleCurrentChange = () => {};
-
+    // -------------------------------------------------------------------------
+    loadArticles(); // 初始化加载评论
     return {
       tableData,
+      articles,
 
       handleSizeChange,
       handleCurrentChange,

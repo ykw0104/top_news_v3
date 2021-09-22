@@ -34,7 +34,7 @@
       <!-- b2. 图片显示 -->
       <el-row :gutter="5">
         <el-col
-          class="image-col"
+          class="image-item"
           v-for="(image, index) in images"
           :key="index"
           :xs="12"
@@ -48,6 +48,16 @@
             :src="image.url"
             fit="cover"
           ></el-image>
+
+          <div class="img-action">
+            <i
+              :class="{
+                'el-icon-star-on': image.is_collected,
+                'el-icon-star-off': !image.is_collected,
+              }"
+            ></i>
+            <i class="el-icon-delete"></i>
+          </div>
         </el-col>
       </el-row>
 
@@ -177,7 +187,22 @@ export default defineComponent({
   }
 }
 
-.image-col {
+.image-item {
+  position: relative;
   margin-bottom: 1px;
+
+  .img-action {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    position: absolute;
+    bottom: 4px;
+    left: 2px;
+    right: 2px;
+    height: 40px;
+    font-size: 24px;
+    color: #fff;
+    background-color: rgba(204, 204, 204, 0.4);
+  }
 }
 </style>

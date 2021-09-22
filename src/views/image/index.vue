@@ -55,6 +55,7 @@
                 'el-icon-star-on': image.is_collected,
                 'el-icon-star-off': !image.is_collected,
               }"
+              @click="onCollect(image)"
             ></i>
             <i class="el-icon-delete"></i>
           </div>
@@ -106,7 +107,7 @@
 <script>
 import { defineComponent, ref } from "vue";
 
-import { getImages } from "../../api/image";
+import { getImages, collectImage } from "../../api/image";
 
 import { ElMessage } from "element-plus";
 
@@ -142,7 +143,7 @@ export default defineComponent({
     };
 
     /* 图片上传成功后的操作 */
-    const onUploadSuccess = () => {
+    const onUploadSuccess = (isCollected) => {
       dialogUploadVisible.value = false; // 关闭上传弹框
       loadImages(currentPage.value); // 更新列表
 
@@ -155,6 +156,14 @@ export default defineComponent({
     /* 分页的页码改变时 */
     const onPageChange = (page) => {
       loadImages(page);
+    };
+
+    /* 图片收藏处理 */
+    const onCollect = (image) => {
+      // 图片收藏或取消收藏
+      collectImage(image.id, !image.is_collected).then((res) => {
+        image.is_collected = !image.is_collected; // 页面上的视图更新
+      });
     };
     // ----------------------------------------------------------------------
     loadImages(1); // 初始化加载图片
@@ -171,6 +180,7 @@ export default defineComponent({
       loadImages,
       onUploadSuccess,
       onPageChange,
+      onCollect,
     };
   },
 });

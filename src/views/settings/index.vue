@@ -47,10 +47,28 @@
             <p class="avatar-edit">点击修改头像</p>
           </label>
           <!-- <p class="avatar-edit" @click="avatarFile.click()">点击修改头像</p> -->
-          <input id="avatar-file" ref="avatarFile" type="file" hidden />
+          <input
+            id="avatar-file"
+            ref="avatarFile"
+            type="file"
+            hidden
+            @change="onFileChange"
+          />
         </el-col>
       </el-row>
     </el-card>
+
+    <el-dialog v-model="dialogVisible" title="修改头像" width="30%">
+      <img style="width: 80%;" :src="previewImage" alt="" />
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">Cancel</el-button>
+          <el-button type="primary" @click="dialogVisible = false"
+            >Confirm</el-button
+          >
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -71,6 +89,8 @@ export default defineComponent({
       photo: "",
     });
     const avatarFile = ref(null);
+    const dialogVisible = ref(false); // 控制上传图片裁切预览的显示状态
+    const previewImage = ref(""); // 预览图片
     // -----------------------------------------------------------
     /* 加载用户 */
     const loadUser = () => {
@@ -79,11 +99,24 @@ export default defineComponent({
       });
     };
 
+    const onFileChange = () => {
+      // 处理图片预览, 添加的图片赋值给previewImage, 再把previewImage绑定到img的src标签里
+      previewImage.value = window.URL.createObjectURL(
+        avatarFile.value.files[0]
+      );
+      // 展示弹出层, 预览用户选择的图片
+      dialogVisible.value = true;
+      avatarFile.value.value = ""; // 解决选择相同文件不触发 change事件的问题
+    };
     // ----------------------------------------------------------
     loadUser();
     return {
       user,
       avatarFile,
+      dialogVisible,
+      previewImage,
+
+      onFileChange,
     };
   },
 });

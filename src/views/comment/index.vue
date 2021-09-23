@@ -15,17 +15,18 @@
         </el-table-column>
         <el-table-column prop="fans_comment_count" label="粉丝评论数">
         </el-table-column>
-        <el-table-column label="状态">
+        <el-table-column label="评论状态">
           <template #default="scope">
             {{ scope.row.comment_status ? "正常" : "关闭" }}
           </template>
         </el-table-column>
         <el-table-column label="操作">
           <template #default="scope">
+            <!-- 双向绑定 comment_status -->
             <el-switch
+              :disabled="scope.row.statusDisabled"
               v-model="scope.row.comment_status"
-              active-color="#13ce66"
-              inactive-color="#ff4949"
+              @change="onStatusChange(scope.row)"
             />
           </template>
         </el-table-column>
@@ -49,27 +50,46 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 
-import { getArticles } from "../../api/article";
+import { getArticles, updateCommentStatus } from "../../api/article";
+
+import { ElMessage } from "element-plus";
 
 export default defineComponent({
   name: "CommentIndex",
   setup() {
-    const tableData = ref([
-      {
-        date: "2016-05-02",
-        name: "王小虎",
-        address: "上海市普陀区金沙江路 1518 弄",
-      },
-    ]);
-
     const articles = ref([]);
     // -------------------------------------------------------------------------
+    /* 加载评论管理 */
     const loadArticles = () => {
       getArticles({
         response_type: "comment",
       }).then((res) => {
-        articles.value = res.data.data.results;
+        const results = res.data.data.results;
+        results.forEach((article) => {
+          article.statusDisabled = false;
+        });
+
+        articles.value = results;
       });
+    };
+
+    /* 更新评论状态 */
+    const onStatusChange = (article) => {
+      article.statusDisabled = true;
+      // 请求更新评论状态
+      updateCommentStatus(article.id.toString(), article.comment_status)
+        .then((res) => {
+          article.statusDisabled = false;
+          ElMessage({
+            message: "评论状态更新成功",
+            type: "success",
+          });
+        })
+        .catch((err) => {
+          article.statusDisabled = false;
+          article.comment_status = !article.comment_status;
+          ElMessage.error(`评论状态更新失败 ${err}`);
+        });
     };
 
     const handleSizeChange = () => {};
@@ -77,11 +97,11 @@ export default defineComponent({
     // -------------------------------------------------------------------------
     loadArticles(); // 初始化加载评论
     return {
-      tableData,
       articles,
 
       handleSizeChange,
       handleCurrentChange,
+      onStatusChange,
     };
   },
 });

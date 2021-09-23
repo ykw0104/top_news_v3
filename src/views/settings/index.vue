@@ -12,21 +12,21 @@
       <el-row>
         <!-- 第1列 -->
         <el-col :span="16">
-          <el-form ref="form" :model="form" label-width="80px">
+          <el-form ref="form" :model="user" label-width="80px">
             <el-form-item label="编号">
-              123
+              {{ user.id }}
             </el-form-item>
             <el-form-item label="手机">
-              456
+              {{ user.mobile }}
             </el-form-item>
             <el-form-item label="媒体名称">
-              <el-input v-model="form.name"></el-input>
+              <el-input v-model="user.name"></el-input>
             </el-form-item>
             <el-form-item label="媒体介绍">
-              <el-input v-model="form.desc" type="textarea"></el-input>
+              <el-input v-model="user.intro" type="textarea"></el-input>
             </el-form-item>
             <el-form-item label="邮箱">
-              <el-input v-model="form.name"></el-input>
+              <el-input v-model="user.email"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary">保存</el-button>
@@ -36,10 +36,11 @@
         <!-- 第2列 -->
         <el-col :offset="2" :span="4">
           <el-avatar
+            class="settings-avatar"
             shape="square"
             :size="150"
             fit="cover"
-            src="https://img0.baidu.com/it/u=1077360284,2857506492&fm=26&fmt=auto"
+            :src="user.photo"
           />
           <p>点击修改头像</p>
         </el-col>
@@ -49,28 +50,40 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
+
+import { getUserProfile } from "../../api/user.js";
 
 export default defineComponent({
-  data() {
-    return {
-      form: {
-        name: "",
-        region: "",
-        date1: "",
-        date2: "",
-        delivery: false,
-        type: [],
-        resource: "",
-        desc: "",
-      },
-    };
-  },
   name: "SettingsIndex",
   setup() {
-    return {};
+    const user = ref({
+      email: "",
+      id: null,
+      intro: "",
+      mobile: "",
+      name: "",
+      photo: "",
+    });
+    // -----------------------------------------------------------
+    /* 加载用户 */
+    const loadUser = () => {
+      getUserProfile().then((res) => {
+        user.value = res.data.data;
+      });
+    };
+
+    // ----------------------------------------------------------
+    loadUser();
+    return {
+      user,
+    };
   },
 });
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.settings-avatar {
+  cursor: pointer;
+}
+</style>

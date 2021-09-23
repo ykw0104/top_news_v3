@@ -34,15 +34,20 @@
           </el-form>
         </el-col>
         <!-- 第2列 -->
+
         <el-col :offset="2" :span="4">
-          <el-avatar
-            class="settings-avatar"
-            shape="square"
-            :size="150"
-            fit="cover"
-            :src="user.photo"
-          />
-          <p>点击修改头像</p>
+          <label for="avatar-file">
+            <el-avatar
+              class="settings-avatar"
+              shape="square"
+              :size="150"
+              fit="cover"
+              :src="user.photo"
+            />
+            <p class="avatar-edit">点击修改头像</p>
+          </label>
+          <!-- <p class="avatar-edit" @click="avatarFile.click()">点击修改头像</p> -->
+          <input id="avatar-file" ref="avatarFile" type="file" hidden />
         </el-col>
       </el-row>
     </el-card>
@@ -65,6 +70,7 @@ export default defineComponent({
       name: "",
       photo: "",
     });
+    const avatarFile = ref(null);
     // -----------------------------------------------------------
     /* 加载用户 */
     const loadUser = () => {
@@ -77,13 +83,15 @@ export default defineComponent({
     loadUser();
     return {
       user,
+      avatarFile,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
-.settings-avatar {
+.settings-avatar,
+.avatar-edit {
   cursor: pointer;
 }
 </style>

@@ -36,11 +36,11 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="1"
-        :page-sizes="[100, 200, 300, 400]"
-        :page-size="100"
+        v-model:current-page="pageInfo.curPage"
+        :page-sizes="[10, 20, 30, 50]"
+        v-model:page-size="pageInfo.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="pageInfo.totalCount"
         background
       />
     </el-card>
@@ -48,7 +48,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, reactive } from "vue";
 
 import { getArticles, updateCommentStatus } from "../../api/article";
 
@@ -58,10 +58,20 @@ export default defineComponent({
   name: "CommentIndex",
   setup() {
     const articles = ref([]);
+    // 分页相关
+    const pageInfo = reactive({
+      curPage: 1, // 当前页
+      pageSize: 10, // 每页几条
+      totalCount: 0, // 总数
+    });
     // -------------------------------------------------------------------------
     /* 加载评论管理 */
-    const loadArticles = () => {
+    const loadArticles = (page = 1) => {
+      pageInfo.curPage = page;
+
       getArticles({
+        page,
+        per_page: pageInfo.pageSize,
         response_type: "comment",
       }).then((res) => {
         const results = res.data.data.results;
@@ -70,6 +80,7 @@ export default defineComponent({
         });
 
         articles.value = results;
+        pageInfo.totalCount = res.data.data.total_count;
       });
     };
 
@@ -92,12 +103,20 @@ export default defineComponent({
         });
     };
 
-    const handleSizeChange = () => {};
-    const handleCurrentChange = () => {};
+    /* 每页显示条数改变 */
+    const handleSizeChange = (curPageSize) => {
+      loadArticles(1); // page-size改变后,重新加载评论
+    };
+
+    /* 当前页改变 */
+    const handleCurrentChange = (curPage) => {
+      loadArticles(curPage); // 加载指定页码的评论
+    };
     // -------------------------------------------------------------------------
-    loadArticles(); // 初始化加载评论
+    loadArticles(1); // 初始化加载评论
     return {
       articles,
+      pageInfo,
 
       handleSizeChange,
       handleCurrentChange,

@@ -20,7 +20,8 @@
         <!-- 2.2 顶部右侧 -->
         <el-dropdown class="header-right">
           <div class="avatar-wrap">
-            <img class="avatar" src="./login-avatar.jpeg" alt="" />
+            <!-- <img class="avatar" src="./login-avatar.jpeg" alt="" /> -->
+            <img class="avatar" :src="layoutState.user.photo" alt="" />
             <span>{{ layoutState.user.name }}</span>
             <i class="el-icon-arrow-down el-icon--right"></i>
           </div>

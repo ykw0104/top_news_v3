@@ -23,3 +23,13 @@ export const getUserProfile = () => {
 
 // 修改用户信息
 export const updateUserInfo = () => {};
+
+// 修改用户头像
+// photo必须传递FormData对象
+export const updateUserPhoto = (photo) => {
+  return request({
+    method: "PATCH",
+    url: "/mp/v1_0/user/photo",
+    data: photo,
+  });
+};

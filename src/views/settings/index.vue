@@ -8,9 +8,9 @@
           <el-breadcrumb-item>个人设置</el-breadcrumb-item>
         </el-breadcrumb>
       </template>
-      <!---------------------------- b. 内容 -------------------------------------------------------->
+
       <el-row>
-        <!-- 第1列 -->
+        <!---------------------------- b. 内容 -------------------------------------------------------->
         <el-col :span="16">
           <el-form ref="form" :model="user" label-width="80px">
             <el-form-item label="编号">
@@ -33,8 +33,7 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <!-- 第2列 -->
-
+        <!----------------------------- c. 图片头像裁切  ----------------------------------------------->
         <el-col :offset="2" :span="4">
           <label for="avatar-file">
             <el-avatar
@@ -47,6 +46,8 @@
             <p class="avatar-edit">点击修改头像</p>
           </label>
           <!-- <p class="avatar-edit" @click="avatarFile.click()">点击修改头像</p> -->
+
+          <!-- 隐藏input, 用上面的label绑定这里的input -->
           <input
             id="avatar-file"
             ref="avatarFile"
@@ -63,6 +64,7 @@
       title="修改头像"
       width="30%"
       @opened="onDialogOpened"
+      @closed="onDialogClosed"
     >
       <div class="preview-image-wrap">
         <img class="preview-image" ref="previewImageRef" :src="previewImage" />
@@ -70,10 +72,10 @@
 
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">Cancel</el-button>
-          <el-button type="primary" @click="dialogVisible = false"
-            >Confirm</el-button
-          >
+          <el-button @click="dialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="onUpdatePhoto">
+            确定
+          </el-button>
         </span>
       </template>
     </el-dialog>
@@ -83,7 +85,7 @@
 <script>
 import { defineComponent, ref } from "vue";
 
-import { getUserProfile } from "../../api/user.js";
+import { getUserProfile, updateUserPhoto } from "../../api/user.js";
 
 import "cropperjs/dist/cropper.css";
 import Cropper from "cropperjs";
@@ -103,6 +105,7 @@ export default defineComponent({
     const dialogVisible = ref(false); // 控制上传图片裁切预览的显示状态
     const previewImage = ref(""); // 保存预览图片的src
     const previewImageRef = ref(null); // 预览图片的ref
+    const cropper = ref(null); // Cropper裁切器实例对象
     // -----------------------------------------------------------
     /* 加载用户 */
     const loadUser = () => {
@@ -124,17 +127,38 @@ export default defineComponent({
 
     /* dialog框完全打开时触发 */
     const onDialogOpened = () => {
-      const cropper = new Cropper(previewImageRef.value, {
-        aspectRatio: 16 / 9,
-        crop(event) {
-          console.log(event.detail.x);
-          console.log(event.detail.y);
-          console.log(event.detail.width);
-          console.log(event.detail.height);
-          console.log(event.detail.rotate);
-          console.log(event.detail.scaleX);
-          console.log(event.detail.scaleY);
-        },
+      // c2. 下次可以加载其他图片 方式一: replace方法
+      // if (cropper.value) {
+      //   cropper.value.replace(previewImage.value);
+      //   return;
+      // }
+
+      // c1. 创建cropper实例
+      cropper.value = new Cropper(previewImageRef.value, {
+        aspectRatio: 1 / 1,
+        viewMode: 1,
+        dragMode: "none",
+      });
+    };
+
+    /* dialog框完全关闭时触发 */
+    const onDialogClosed = () => {
+      // c2. 下次可以加载其他图片 方式二: 销毁裁切器,
+      cropper.value.destroy();
+    };
+
+    /* 确定更新头像 */
+    const onUpdatePhoto = () => {
+      // c3. 获取裁切图片对象并提交
+      cropper.value.getCroppedCanvas().toBlob((img) => {
+        const formData = new FormData();
+        formData.append("photo", img); // photo是接口文档里指定的
+        //请求提交formData
+        return updateUserPhoto(formData).then((res) => {
+          dialogVisible.value = false; // 关闭对话框
+          // user.value.photo = res.data.data.photo; // 更新页面的头像, 服务端返回有点慢
+          user.value.photo = window.URL.createObjectURL(img); // 更新页面的头像
+        });
       });
     };
     // ----------------------------------------------------------
@@ -148,6 +172,8 @@ export default defineComponent({
 
       onFileChange,
       onDialogOpened,
+      onDialogClosed,
+      onUpdatePhoto,
     };
   },
 });
@@ -163,7 +189,7 @@ export default defineComponent({
   .preview-image {
     display: block;
     max-width: 100%;
-    height: 200px;
+    height: 250px;
     margin: 0 auto;
   }
 }

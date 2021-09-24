@@ -58,8 +58,16 @@
       </el-row>
     </el-card>
 
-    <el-dialog v-model="dialogVisible" title="修改头像" width="30%">
-      <img style="width: 80%;" :src="previewImage" alt="" />
+    <el-dialog
+      v-model="dialogVisible"
+      title="修改头像"
+      width="30%"
+      @opened="onDialogOpened"
+    >
+      <div class="preview-image-wrap">
+        <img class="preview-image" ref="previewImageRef" :src="previewImage" />
+      </div>
+
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">Cancel</el-button>
@@ -77,6 +85,9 @@ import { defineComponent, ref } from "vue";
 
 import { getUserProfile } from "../../api/user.js";
 
+import "cropperjs/dist/cropper.css";
+import Cropper from "cropperjs";
+
 export default defineComponent({
   name: "SettingsIndex",
   setup() {
@@ -90,7 +101,8 @@ export default defineComponent({
     });
     const avatarFile = ref(null);
     const dialogVisible = ref(false); // 控制上传图片裁切预览的显示状态
-    const previewImage = ref(""); // 预览图片
+    const previewImage = ref(""); // 保存预览图片的src
+    const previewImageRef = ref(null); // 预览图片的ref
     // -----------------------------------------------------------
     /* 加载用户 */
     const loadUser = () => {
@@ -99,6 +111,7 @@ export default defineComponent({
       });
     };
 
+    /* <input type="file">添加文件时触发 */
     const onFileChange = () => {
       // 处理图片预览, 添加的图片赋值给previewImage, 再把previewImage绑定到img的src标签里
       previewImage.value = window.URL.createObjectURL(
@@ -108,6 +121,22 @@ export default defineComponent({
       dialogVisible.value = true;
       avatarFile.value.value = ""; // 解决选择相同文件不触发 change事件的问题
     };
+
+    /* dialog框完全打开时触发 */
+    const onDialogOpened = () => {
+      const cropper = new Cropper(previewImageRef.value, {
+        aspectRatio: 16 / 9,
+        crop(event) {
+          console.log(event.detail.x);
+          console.log(event.detail.y);
+          console.log(event.detail.width);
+          console.log(event.detail.height);
+          console.log(event.detail.rotate);
+          console.log(event.detail.scaleX);
+          console.log(event.detail.scaleY);
+        },
+      });
+    };
     // ----------------------------------------------------------
     loadUser();
     return {
@@ -115,8 +144,10 @@ export default defineComponent({
       avatarFile,
       dialogVisible,
       previewImage,
+      previewImageRef,
 
       onFileChange,
+      onDialogOpened,
     };
   },
 });
@@ -126,5 +157,14 @@ export default defineComponent({
 .settings-avatar,
 .avatar-edit {
   cursor: pointer;
+}
+
+.preview-image-wrap {
+  .preview-image {
+    display: block;
+    max-width: 100%;
+    height: 200px;
+    margin: 0 auto;
+  }
 }
 </style>

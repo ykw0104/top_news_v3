@@ -48,6 +48,8 @@ import { useRouter } from "vue-router";
 import AppAside from "./components/aside.vue";
 import { getUserProfile } from "../../api/user.js";
 
+import mitter from "../../utils/eventbus";
+
 import { ElMessageBox, ElMessage } from "element-plus";
 
 export default defineComponent({
@@ -57,7 +59,14 @@ export default defineComponent({
   },
   setup() {
     const layoutState = reactive({
-      user: {}, // 用户信息
+      user: {
+        email: "",
+        id: 0,
+        intro: "",
+        mobile: "",
+        name: "",
+        photo: "",
+      }, // 用户信息
     });
     const isCollapse = ref(false); //侧边栏是否折叠
     const router = useRouter();
@@ -85,6 +94,13 @@ export default defineComponent({
           });
         });
     };
+
+    /* 注册事件总线 */
+    mitter.on("update-user", (user) => {
+      // 个人设置数据改变后layout的user信息
+      layoutState.user.name = user.name;
+      layoutState.user.photo = user.photo;
+    });
 
     return {
       layoutState,

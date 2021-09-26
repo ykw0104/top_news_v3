@@ -101,6 +101,8 @@ import Cropper from "cropperjs";
 
 import { ElMessage } from "element-plus";
 
+import mitter from "../../utils/eventbus";
+
 export default defineComponent({
   name: "SettingsIndex",
   setup() {
@@ -159,7 +161,7 @@ export default defineComponent({
       cropper.value.destroy();
     };
 
-    /* 确定更新头像 */
+    /* 更新头像 */
     const onUpdatePhoto = () => {
       // c3. 获取裁切图片对象并提交
       cropper.value.getCroppedCanvas().toBlob((img) => {
@@ -170,6 +172,8 @@ export default defineComponent({
           dialogVisible.value = false; // 关闭对话框
           // user.value.photo = res.data.data.photo; // 更新页面的头像, 服务端返回有点慢
           user.value.photo = window.URL.createObjectURL(img); // 更新页面的头像
+
+          mitter.emit("update-user", user.value); // 用户同步到layout的用户头像
         });
       });
     };
@@ -189,6 +193,8 @@ export default defineComponent({
           type: "success",
         });
         updateUserProfileLoading.value = false;
+
+        mitter.emit("update-user", user.value); // 用户同步到layout的的用户昵称
       });
     };
     // ----------------------------------------------------------

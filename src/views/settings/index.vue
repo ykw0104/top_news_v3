@@ -29,7 +29,12 @@
               <el-input v-model="user.email"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary">保存</el-button>
+              <el-button
+                type="primary"
+                :loading="updateUserProfileLoading"
+                @click="onUpdateUser"
+                >保存</el-button
+              >
             </el-form-item>
           </el-form>
         </el-col>
@@ -85,10 +90,16 @@
 <script>
 import { defineComponent, ref } from "vue";
 
-import { getUserProfile, updateUserPhoto } from "../../api/user.js";
+import {
+  getUserProfile,
+  updateUserPhoto,
+  updateUserProfile,
+} from "../../api/user.js";
 
 import "cropperjs/dist/cropper.css";
 import Cropper from "cropperjs";
+
+import { ElMessage } from "element-plus";
 
 export default defineComponent({
   name: "SettingsIndex",
@@ -106,6 +117,7 @@ export default defineComponent({
     const previewImage = ref(""); // 保存预览图片的src
     const previewImageRef = ref(null); // 预览图片的ref
     const cropper = ref(null); // Cropper裁切器实例对象
+    const updateUserProfileLoading = ref(false); // 更新用户加载中
     // -----------------------------------------------------------
     /* 加载用户 */
     const loadUser = () => {
@@ -161,6 +173,24 @@ export default defineComponent({
         });
       });
     };
+
+    /* 更新用户信息 */
+    const onUpdateUser = () => {
+      // 表单验证(忽略)
+      // 表单验证通过,提交表单
+      updateUserProfileLoading.value = true;
+      updateUserProfile({
+        name: user.value.name,
+        intro: user.value.intro,
+        email: user.value.email,
+      }).then((res) => {
+        ElMessage({
+          message: "用户信息更新成功",
+          type: "success",
+        });
+        updateUserProfileLoading.value = false;
+      });
+    };
     // ----------------------------------------------------------
     loadUser();
     return {
@@ -169,11 +199,13 @@ export default defineComponent({
       dialogVisible,
       previewImage,
       previewImageRef,
+      updateUserProfileLoading,
 
       onFileChange,
       onDialogOpened,
       onDialogClosed,
       onUpdatePhoto,
+      onUpdateUser,
     };
   },
 });

@@ -132,7 +132,7 @@ export default defineComponent({
     const onFileChange = () => {
       // 处理图片预览, 添加的图片赋值给previewImage, 再把previewImage绑定到img的src标签里
       previewImage.value = window.URL.createObjectURL(
-        avatarFile.value.files[0]
+        avatarFile.value.files[0] // 选择的文件列表
       );
       // 展示弹出层, 预览用户选择的图片
       dialogVisible.value = true;

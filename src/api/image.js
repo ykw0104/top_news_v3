@@ -3,6 +3,14 @@
  */
 import request from "@/utils/request.js";
 
+export const uploadImage = (image) => {
+  return request({
+    method: "POST",
+    url: "/mp/v1_0/user/images",
+    data: image,
+  });
+};
+
 /* 获取图片列表 */
 export const getImages = (image) => {
   return request({

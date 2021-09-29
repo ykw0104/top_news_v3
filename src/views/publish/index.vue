@@ -31,6 +31,10 @@
             <el-radio :label="0">无图</el-radio>
             <el-radio :label="-1">自动</el-radio>
           </el-radio-group>
+          <!-- 上传图片组件 -->
+          <template v-if="article.cover.type > 0">
+            <upload-cover v-for="cover in article.cover.type" :key="cover" />
+          </template>
         </el-form-item>
         <el-form-item label="频道" prop="channel_id">
           <el-select v-model="article.channel_id" placeholder="请选择频道">
@@ -64,8 +68,11 @@ import {
 
 import { ElMessage } from "element-plus";
 
+import UploadCover from "./components/upload-cover.vue";
+
 export default defineComponent({
   name: "PublishIndex",
+  components: { UploadCover },
   setup() {
     const articleRef = ref(null);
 

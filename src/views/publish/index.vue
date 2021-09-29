@@ -33,7 +33,12 @@
           </el-radio-group>
           <!-- 上传图片组件 -->
           <template v-if="article.cover.type > 0">
-            <upload-cover v-for="cover in article.cover.type" :key="cover" />
+            <upload-cover
+              v-for="(cover, index) in article.cover.type"
+              :key="cover"
+              :cover-image-prop="article.cover.images[index]"
+              @update-cover="onUpdateCover(url, index)"
+            />
           </template>
         </el-form-item>
         <el-form-item label="频道" prop="channel_id">
@@ -73,7 +78,7 @@ import UploadCover from "./components/upload-cover.vue";
 export default defineComponent({
   name: "PublishIndex",
   components: { UploadCover },
-  setup() {
+  setup(props) {
     const articleRef = ref(null);
 
     const article = reactive({
@@ -186,6 +191,11 @@ export default defineComponent({
         article.channel_id = channel_id;
       });
     };
+
+    /* 接受子组件传过来的图片url */
+    const onUpdateCover = (url, index) => {
+      article.cover.images[index] = url;
+    };
     // ---------------------------------------------------------------------------------------------------
 
     loadArticlesChannels(); // 初始化 文章频道
@@ -202,6 +212,7 @@ export default defineComponent({
       channels,
 
       onPublish,
+      onUpdateCover,
     };
   },
 });

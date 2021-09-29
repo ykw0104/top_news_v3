@@ -1,7 +1,7 @@
 <template>
   <div class="upload-cover" @click="showCoverSelect">
     <div class="cover-wrap">
-      <img class="cover-image" ref="coverImage" />
+      <img class="cover-image" ref="coverImage" :src="coverImageProp" />
     </div>
 
     <el-dialog v-model="dialogVisible" title="选择封面" width="30%">
@@ -32,7 +32,8 @@ import { ElMessage } from "element-plus";
 
 export default defineComponent({
   name: "UploadCover",
-  setup() {
+  props: ["cover-image-prop"],
+  setup(props, { emit }) {
     const dialogVisible = ref(false);
     const activeName = ref("first");
     const fileRef = ref(null);
@@ -73,6 +74,8 @@ export default defineComponent({
           dialogVisible.value = false;
           // 展示上传的图片
           coverImage.value.src = res.data.data.url;
+          // 将图片地址发送给父组件
+          emit("update-cover", res.data.data.url);
         });
       }
     };

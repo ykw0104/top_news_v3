@@ -33,11 +33,16 @@
           </el-radio-group>
           <!-- 上传图片组件 -->
           <template v-if="article.cover.type > 0">
-            <upload-cover
+            <!-- <upload-cover
               v-for="(cover, index) in article.cover.type"
               :key="cover"
               :cover-image-prop="article.cover.images[index]"
               @update-cover="onUpdateCover(url, index)"
+            /> -->
+            <upload-cover
+              v-for="(cover, index) in article.cover.type"
+              :key="cover"
+              v-model="article.cover.images[index]"
             />
           </template>
         </el-form-item>

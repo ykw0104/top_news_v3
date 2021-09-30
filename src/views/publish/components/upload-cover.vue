@@ -9,7 +9,12 @@
       <el-tabs v-model="activeName" type="card">
         <!-- 1. 素材库的Tab -->
         <el-tab-pane label="素材库" name="first">
-          <image-list :is-show-add="false" :is-show-action="false" />
+          <image-list
+            :is-show-add="false"
+            :is-show-action="false"
+            :is-show-selected="true"
+            ref="imageListRef"
+          />
         </el-tab-pane>
         <!-- 2. 上传图片的Tab -->
         <el-tab-pane label="上传图片" name="second">
@@ -47,6 +52,7 @@ export default defineComponent({
     const fileRef = ref(null);
     const previewImage = ref(null);
     const coverImage = ref(null);
+    const imageListRef = ref(null);
 
     const showCoverSelect = () => {
       dialogVisible.value = true;
@@ -66,8 +72,8 @@ export default defineComponent({
 
     /* 确认按钮 */
     const onCoverConfirm = () => {
-      // 如果tab是上传图片, 并且input file有选择文件,才执行上传图片的操作
       if (activeName.value === "second") {
+        // a. 如果tab是上传图片, 并且input file有选择文件,才执行上传图片的操作
         const file = fileRef.value.files[0];
         // 没有选择文件
         if (!file) {
@@ -85,6 +91,18 @@ export default defineComponent({
           // 将图片地址发送给父组件
           emit("update:modelValue", res.data.data.url);
         });
+      } else if (activeName.value === "first") {
+        // b. 素材库的Tab
+        const imageList = imageListRef.value;
+        const selected = imageList.selected;
+        if (selected === null) {
+          ElMessage("请选择封面图片");
+          return;
+        }
+
+        // 关闭弹出层
+        dialogVisible.value = false;
+        emit("update:modelValue", imageList.images[selected].url);
       }
     };
 
@@ -94,6 +112,7 @@ export default defineComponent({
       fileRef,
       previewImage,
       coverImage,
+      imageListRef,
 
       showCoverSelect,
       onFileChange,

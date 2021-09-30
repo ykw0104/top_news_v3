@@ -37,7 +37,7 @@
         <el-image style="height:100px" :src="image.url" fit="cover"></el-image>
 
         <!-- 对钩 -->
-        <div class="selected" v-if="selected === index"></div>
+        <div class="selected" v-if="isShowSelected && selected === index"></div>
 
         <div class="img-action" v-if="isShowAction">
           <el-button
@@ -120,6 +120,11 @@ export default defineComponent({
     isShowAction: {
       type: Boolean,
       default: true,
+    },
+    // 是否显示对钩
+    isShowSelected: {
+      type: Boolean,
+      default: false,
     },
   },
   setup() {

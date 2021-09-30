@@ -32,8 +32,12 @@
         :md="6"
         :lg="4"
         :xl="4"
+        @click="selected = index"
       >
         <el-image style="height:100px" :src="image.url" fit="cover"></el-image>
+
+        <!-- 对钩 -->
+        <div class="selected" v-if="selected === index"></div>
 
         <div class="img-action" v-if="isShowAction">
           <el-button
@@ -132,6 +136,8 @@ export default defineComponent({
         JSON.parse(window.localStorage.getItem("user")).token
       }`,
     });
+
+    const selected = ref(null); // 选中的索引
     // ----------------------------------------------------------------------
     /* 加载图片:collect: false(全部), true(收藏) */
     const loadImages = (page = 1) => {
@@ -197,6 +203,7 @@ export default defineComponent({
       collectRadio,
       dialogUploadVisible,
       uploadHeaders,
+      selected,
 
       loadImages,
       onUploadSuccess,
@@ -236,5 +243,21 @@ export default defineComponent({
     color: #fff;
     background-color: rgba(204, 204, 204, 0.4);
   }
+}
+
+.selected {
+  background: url("./right.jpeg") no-repeat center/cover;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 20px;
+  height: 20px;
 }
 </style>

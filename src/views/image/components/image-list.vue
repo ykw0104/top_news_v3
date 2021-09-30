@@ -12,6 +12,7 @@
       </el-radio-group>
 
       <el-button
+        v-if="isShowAdd"
         class="img-radio-right"
         size="mini"
         type="success"
@@ -34,7 +35,7 @@
       >
         <el-image style="height:100px" :src="image.url" fit="cover"></el-image>
 
-        <div class="img-action">
+        <div class="img-action" v-if="isShowAction">
           <el-button
             :icon="image.is_collected ? 'el-icon-star-on' : 'el-icon-star-off'"
             type="warning"
@@ -105,6 +106,18 @@ import { ElMessage } from "element-plus";
 
 export default defineComponent({
   name: "ImageListIndex",
+  props: {
+    // 是否显示添加素材按钮
+    isShowAdd: {
+      type: Boolean,
+      default: true,
+    },
+    // 是否显示收藏删除按钮
+    isShowAction: {
+      type: Boolean,
+      default: true,
+    },
+  },
   setup() {
     // ----------------------------------------------------------------------
     const collectRadio = ref(false); // 默认查询全部

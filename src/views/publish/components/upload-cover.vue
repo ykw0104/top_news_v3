@@ -7,9 +7,12 @@
     <el-dialog v-model="dialogVisible" title="选择封面" width="30%">
       <!-- 标签 -->
       <el-tabs v-model="activeName" type="card">
-        <el-tab-pane label="素材库" name="first">素材库</el-tab-pane>
+        <!-- 1. 素材库的Tab -->
+        <el-tab-pane label="素材库" name="first">
+          <image-list :is-show-add="false" :is-show-action="false" />
+        </el-tab-pane>
+        <!-- 2. 上传图片的Tab -->
         <el-tab-pane label="上传图片" name="second">
-          <!-- 上传图片的Tab -->
           <input ref="fileRef" type="file" @change="onFileChange" />
           <img ref="previewImage" width="100" alt="" />
         </el-tab-pane>
@@ -28,10 +31,13 @@
 import { defineComponent, ref } from "vue";
 import { uploadImage } from "../../../api/image";
 
+import ImageList from "../../image/components/image-list.vue";
+
 import { ElMessage } from "element-plus";
 
 export default defineComponent({
   name: "UploadCover",
+  components: { ImageList },
   props: {
     modelValue: String,
   },
